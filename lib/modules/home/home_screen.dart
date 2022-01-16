@@ -17,9 +17,7 @@ class HomeScreen extends GetView<HomeController> {
 
   Widget _buildWidget() {
     return Scaffold(
-      body: Center(
-        child: _buildContent(controller.currentTab.value),
-      ),
+      body: _buildContent(controller.currentTab.value),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           _buildNavigationBarItem(

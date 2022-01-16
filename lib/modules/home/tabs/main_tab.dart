@@ -13,19 +13,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 class MainTab extends GetView<HomeController> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  final ScrollController _scrollController = ScrollController();
-  bool mounted = false;
 
   void _onRefresh() async {
     // await _fetchPost(isRefresh: true);
     _refreshController.refreshCompleted();
-  }
-
-  void _scrollListener() {
-    if (_scrollController.position.pixels + 50 >=
-        _scrollController.position.maxScrollExtent) {
-      print('fetchStory');
-    }
   }
 
   void _onLoading() async {
@@ -40,10 +31,6 @@ class MainTab extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    if (mounted == false) {
-      _scrollController.addListener(_scrollListener);
-      mounted = true;
-    }
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 40,
@@ -79,6 +66,7 @@ class MainTab extends GetView<HomeController> {
                 height: 6,
               ),
               _buildListStory(),
+              _buildListPost(),
             ],
           ),
           onRefresh: _onRefresh,
@@ -91,6 +79,17 @@ class MainTab extends GetView<HomeController> {
         ),
       ),
     );
+  }
+
+  Widget _buildListPost() {
+    return Column(children: [
+      ...controller.stories.value.map(
+        (post) => SizedBox(
+          height: 300,
+          child: Text(post),
+        ),
+      ),
+    ]);
   }
 
   Widget _buildGridView() {
@@ -128,7 +127,7 @@ class MainTab extends GetView<HomeController> {
       height: 200,
       color: Colors.white,
       child: ListView(
-        controller: _scrollController,
+        controller: controller.scrollController,
         padding: const EdgeInsets.symmetric(vertical: 8),
         scrollDirection: Axis.horizontal,
         children: [
@@ -159,7 +158,7 @@ class MainTab extends GetView<HomeController> {
                       ),
                     ],
                   ),
-                  width: 90,
+                  width: 120,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(

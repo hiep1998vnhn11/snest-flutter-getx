@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:snest/api/api.dart';
 import 'package:snest/models/response/users_response.dart';
 import 'package:snest/models/response/user_response.dart';
@@ -12,6 +13,7 @@ import 'tabs/darhboard/dashboard.dart';
 
 class HomeController extends GetxController {
   final ApiRepository apiRepository;
+  final ScrollController scrollController = ScrollController();
   HomeController({required this.apiRepository});
 
   var currentTab = MainTabs.home.obs;
@@ -43,7 +45,16 @@ class HomeController extends GetxController {
     resourceTab = ResourceTab();
     inboxTab = InboxTab();
     meTab = MeTab();
+
+    scrollController.addListener(_scrollListener);
     await getUserInfo();
+  }
+
+  void _scrollListener() {
+    if (scrollController.position.pixels + 50 >=
+        scrollController.position.maxScrollExtent) {
+      print('fetchStory');
+    }
   }
 
   Future<void> loadUsers() async {
@@ -112,5 +123,11 @@ class HomeController extends GetxController {
 
   Future getStory() async {
     stories.value.add('Story ${stories.value.length}');
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    scrollController.dispose();
   }
 }
