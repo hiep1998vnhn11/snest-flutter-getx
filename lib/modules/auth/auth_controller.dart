@@ -5,6 +5,7 @@ import 'package:snest/routes/app_pages.dart';
 import 'package:snest/shared/shared.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 class AuthController extends GetxController {
   final ApiRepository apiRepository;
@@ -37,14 +38,12 @@ class AuthController extends GetxController {
         CommonWidget.toast('Please check the terms first.');
         return;
       }
-
       final res = await apiRepository.register(
         RegisterRequest(
           email: registerEmailController.text,
           password: registerPasswordController.text,
         ),
       );
-
       final prefs = Get.find<SharedPreferences>();
       if (res!.token.isNotEmpty) {
         prefs.setString(StorageConstants.token, res.token);
@@ -62,12 +61,34 @@ class AuthController extends GetxController {
           password: loginPasswordController.text,
         ),
       );
-
       final prefs = Get.find<SharedPreferences>();
       if (res!.token.isNotEmpty) {
         prefs.setString(StorageConstants.token, res.token);
         Get.toNamed(Routes.HOME);
       }
+    }
+  }
+
+  Future<void> loginFacebook(BuildContext context) async {
+    AppFocus.unfocus(context);
+    try {
+      final LoginResult result = await FacebookAuth.instance.login();
+      if (result.status == LoginStatus.success) {
+        final String accessToken = result.accessToken!.token;
+        final res = await apiRepository.login(
+          LoginRequest(
+            type: '2',
+            token: accessToken,
+          ),
+        );
+        final prefs = Get.find<SharedPreferences>();
+        if (res!.token.isNotEmpty) {
+          prefs.setString(StorageConstants.token, res.token);
+          Get.toNamed(Routes.HOME);
+        }
+      } else {}
+    } catch (e) {
+      print(e);
     }
   }
 

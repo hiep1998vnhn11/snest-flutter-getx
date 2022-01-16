@@ -13,32 +13,34 @@ class _InboxTabState extends State<InboxTab> with TickerProviderStateMixin {
   final List<MsgBox> _messages = [];
   final FocusNode _focusNode = FocusNode();
   final _textController = TextEditingController();
+  late AnimationController animationController;
   bool _isComposing = false;
   bool _isSelf = true;
 
   @override
   void initState() {
     super.initState();
-    _messages.insert(
-        0,
-        SendMsgBox(
-            message: "Hello",
-            animationController: _buildAnimationController()));
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _messages.insert(0,
+        SendMsgBox(message: "Hello", animationController: animationController));
     _messages.insert(
         0,
         ReceiveMsgBox(
             message: "Hi, how are you",
-            animationController: _buildAnimationController()));
+            animationController: animationController));
     _messages.insert(
         0,
         SendMsgBox(
             message: "I am great how are you doing",
-            animationController: _buildAnimationController()));
+            animationController: animationController));
     _messages.insert(
         0,
         ReceiveMsgBox(
             message: "I am also fine",
-            animationController: _buildAnimationController()));
+            animationController: animationController));
 
     Future.delayed(Duration(milliseconds: 250), () {
       _focusNode.requestFocus();
@@ -121,11 +123,11 @@ class _InboxTabState extends State<InboxTab> with TickerProviderStateMixin {
     var message = _isSelf
         ? SendMsgBox(
             message: text,
-            animationController: _buildAnimationController(),
+            animationController: animationController,
           )
         : ReceiveMsgBox(
             message: text,
-            animationController: _buildAnimationController(),
+            animationController: animationController,
           );
 
     setState(() {
@@ -138,10 +140,17 @@ class _InboxTabState extends State<InboxTab> with TickerProviderStateMixin {
     _isSelf = !_isSelf;
   }
 
-  AnimationController _buildAnimationController() {
-    return AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
+  // AnimationController animationController {
+  //   return AnimationController(
+  //     duration: const Duration(milliseconds: 300),
+  //     vsync: this,
+  //   );
+  // }
+
+  @override
+  void dispose() {
+    // _focusNode.dispose();
+    animationController.dispose();
+    super.dispose();
   }
 }

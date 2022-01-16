@@ -21,21 +21,27 @@ class ReceiveMsgBox extends MsgBox {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CachedNetworkImage(
-            width: 46,
-            height: 46,
             fit: BoxFit.fill,
             imageUrl: 'https://reqres.in/img/faces/2-image.jpg',
             placeholder: (context, url) => Image(
               image: AssetImage('assets/images/icon_success.png'),
             ),
+            imageBuilder: (context, imageProvider) => Container(
+              width: 46.0,
+              height: 46.0,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+              ),
+            ),
             errorWidget: (context, url, error) => Icon(Icons.error),
           ),
           SizedBox(width: 10),
-          Transform(
-            alignment: Alignment.center,
-            transform: Matrix4.rotationY(math.pi),
-            child: CustomPaint(painter: MsgArrowPainter(Colors.white)),
-          ),
+          // Transform(
+          //   alignment: Alignment.center,
+          //   transform: Matrix4.rotationY(math.pi),
+          //   child: CustomPaint(painter: MsgArrowPainter(Colors.white)),
+          // ),
           Flexible(
             child: Container(
               padding: EdgeInsets.all(14),

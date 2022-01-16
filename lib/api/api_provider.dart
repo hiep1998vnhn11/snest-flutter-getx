@@ -14,4 +14,12 @@ class ApiProvider extends BaseProvider {
   Future<Response> getUsers(String path) {
     return get(path);
   }
+
+  Future<Response> me() {
+    return get('auth/me');
+  }
+
+  Future<Response> pagination(String path, PaginationRequest data) {
+    return post(path, data.toJson());
+  }
 }

@@ -14,7 +14,6 @@ FutureOr<dynamic> responseInterceptor(
     handleErrorStatus(response);
     return;
   }
-
   return response;
 }
 

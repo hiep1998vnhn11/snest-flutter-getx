@@ -2,10 +2,13 @@ import 'dart:math';
 
 import 'package:snest/api/api.dart';
 import 'package:snest/models/response/users_response.dart';
+import 'package:snest/models/response/user_response.dart';
 import 'package:snest/modules/home/home.dart';
 import 'package:snest/shared/shared.dart';
+import 'package:snest/routes/app_pages.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'tabs/darhboard/dashboard.dart';
 
 class HomeController extends GetxController {
   final ApiRepository apiRepository;
@@ -14,6 +17,17 @@ class HomeController extends GetxController {
   var currentTab = MainTabs.home.obs;
   var users = Rxn<UsersResponse>();
   var user = Rxn<Datum>();
+  var currentUser = Rxn<CurrentUser>();
+  var stories = Rx<List<String>>([
+    'Story 1',
+    'Story 2',
+    'Story 3',
+    'Story 4',
+    'Story 5',
+    'Story 6',
+    'Story 7',
+    'Story 8',
+  ]);
 
   late MainTab mainTab;
   late DiscoverTab discoverTab;
@@ -24,43 +38,37 @@ class HomeController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-
     mainTab = MainTab();
-    loadUsers();
-
     discoverTab = DiscoverTab();
     resourceTab = ResourceTab();
     inboxTab = InboxTab();
     meTab = MeTab();
+    await getUserInfo();
   }
 
   Future<void> loadUsers() async {
-    var _users = await apiRepository.getUsers();
-    if (_users!.data!.length > 0) {
-      users.value = _users;
-      users.refresh();
-      _saveUserInfo(_users);
-    }
+    // var _users = await apiRepository.getUsers();
+    // if (_users!.data!.length > 0) {
+    //   users.value = _users;
+    //   users.refresh();
+    //   _saveUserInfo(_users);
+    // }
   }
 
   void signout() {
     var prefs = Get.find<SharedPreferences>();
     prefs.clear();
-
-    // Get.back();
-    NavigatorHelper.popLastScreens(popCount: 2);
+    Get.toNamed(Routes.AUTH);
   }
 
-  void _saveUserInfo(UsersResponse users) {
-    var random = new Random();
-    var index = random.nextInt(users.data!.length);
-    user.value = users.data![index];
-    var prefs = Get.find<SharedPreferences>();
-    prefs.setString(StorageConstants.userInfo, users.data![index].toRawJson());
-
-    // var userInfo = prefs.getString(StorageConstants.userInfo);
-    // var userInfoObj = Datum.fromRawJson(xx!);
-    // print(userInfoObj);
+  Future<void> getUserInfo() async {
+    try {
+      final user = await apiRepository.me();
+      print('fetchUser');
+      currentUser.value = user;
+    } catch (e) {
+      print(e);
+    }
   }
 
   void switchTab(index) {
@@ -100,5 +108,9 @@ class HomeController extends GetxController {
       default:
         return MainTabs.home;
     }
+  }
+
+  Future getStory() async {
+    stories.value.add('Story ${stories.value.length}');
   }
 }

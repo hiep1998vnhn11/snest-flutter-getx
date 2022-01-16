@@ -13,10 +13,10 @@ class LoginResponse {
   String toRawJson() => json.encode(toJson());
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) => LoginResponse(
-        token: json["token"],
+        token: json["access_token"],
       );
 
   Map<String, dynamic> toJson() => {
-        "token": token,
+        "access_token": token,
       };
 }

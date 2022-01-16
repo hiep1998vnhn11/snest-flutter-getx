@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Snest</string>
+    <string name="facebook_app_id">642814993622572</string>
+    <string name="fb_login_protocol_scheme">fb642814993622572</string>
+    <string name="facebook_client_token">febba45edcf7b0b1a0351d76ee5bb333</string>
+</resources>

@@ -34,7 +34,7 @@ class MeTab extends GetView<HomeController> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Me',
+          'Tôi',
           style: TextStyle(
             fontSize: 20,
             color: Colors.white,
@@ -49,7 +49,7 @@ class MeTab extends GetView<HomeController> {
           height: 10,
         ),
         Text(
-          '${controller.user.value!.email}',
+          '${controller.currentUser.value?.email}',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -96,7 +96,7 @@ class MeTab extends GetView<HomeController> {
             width: 110,
             child: CachedNetworkImage(
               fit: BoxFit.fill,
-              imageUrl: controller.user.value!.avatar ??
+              imageUrl: controller.user.value?.avatar ??
                   'https://reqres.in/img/faces/1-image.jpg',
               placeholder: (context, url) => Image(
                 image: AssetImage('assets/images/icon_success.png'),
@@ -112,7 +112,7 @@ class MeTab extends GetView<HomeController> {
               color: hexToColor('#9A434343'),
             ),
             child: Text(
-              controller.user.value!.firstName ?? '',
+              controller.user.value?.firstName ?? '',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 14,
