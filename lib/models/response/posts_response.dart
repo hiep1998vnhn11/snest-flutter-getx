@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:snest/util/format/date.dart';
 
 class ListPostResponse {
   List<Post> posts;
@@ -9,11 +10,13 @@ class ListPostResponse {
 
   String toRawJson() => json.encode(toJson());
 
-  factory ListPostResponse.fromJson(Map<String, dynamic> json) =>
-      ListPostResponse(
-        posts: List<Post>.from(json["posts"].map((x) => Post.fromJson(x))),
+  factory ListPostResponse.fromJson(List<dynamic> json) => ListPostResponse(
+        posts: List<Post>.from(
+          json.map(
+            (x) => Post.fromJson(x),
+          ),
+        ),
       );
-
   Map<String, dynamic> toJson() => {
         "posts": List<dynamic>.from(posts.map((x) => x.toJson())),
       };
@@ -24,7 +27,7 @@ class Post {
     required this.id,
     this.content,
     this.privacy = 1,
-    this.createdAt,
+    required this.createdAt,
     this.updatedAt,
     required this.userName,
     required this.userUrl,
@@ -33,10 +36,12 @@ class Post {
     this.likesCount = 0,
     this.likeStatus,
     this.imagesCount = 0,
+    required this.uid,
     this.likeGroup = const [],
   });
 
   int id;
+  String uid;
   String? content;
   int privacy;
   String userName;
@@ -47,35 +52,40 @@ class Post {
   int commentsCount;
   int likesCount;
   List<LikeGroup> likeGroup;
-  String? createdAt;
+  String createdAt;
   String? updatedAt;
 
   factory Post.fromRawJson(String str) => Post.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory Post.fromJson(Map<String, dynamic> json) => Post(
-        id: json["id"],
-        content: json["content"],
-        privacy: json["privacy"],
-        createdAt: json["created_at"],
-        updatedAt: json["updated_at"],
-        userName: json["user_name"],
-        userUrl: json["user_url"],
-        userAvatar: json["user_profile_photo_path"],
-        commentsCount: json["comments_count"],
-        likesCount: json["likes_count"] ?? 0,
-        likeStatus: json["like_status"],
-        imagesCount: json["images_count"],
-        likeGroup: List<LikeGroup>.from(
-          json["like_group"].map(
-            (x) => LikeGroup.fromJson(x),
-          ),
+  factory Post.fromJson(Map<String, dynamic> json) {
+    return Post(
+      id: json["id"],
+      uid: json["uid"],
+      content: json["content"],
+      privacy: json["privacy"],
+      createdAt: FormatDate.formatTimeAgo(json["created_at"]),
+      updatedAt: FormatDate.formatTimeAgo(json["updated_at"]),
+      userName: json["user_name"],
+      userUrl: json["user_url"],
+      userAvatar: json["user_profile_photo_path"],
+      commentsCount: json["comments_count"] ?? 0,
+      likesCount: (json["like_group"] as List)
+          .fold(0, (value, element) => value + element['counter'] as int),
+      likeStatus: json["likeStatus"],
+      imagesCount: json["images_count"] ?? 0,
+      likeGroup: List<LikeGroup>.from(
+        json["like_group"].map(
+          (x) => LikeGroup.fromJson(x),
         ),
-      );
+      ),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "id": id,
+        "uid": uid,
         "content": content,
         "privacy": privacy,
         "created_at": createdAt,
@@ -85,7 +95,7 @@ class Post {
         "user_profile_photo_path": userAvatar,
         "comments_count": commentsCount,
         "likes_count": likesCount,
-        "like_status": likeStatus,
+        "likeStatus": likeStatus,
         "images_count": imagesCount,
         "like_group": List<dynamic>.from(
           likeGroup.map((x) => x.toJson()),

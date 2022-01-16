@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:snest/api/api.dart';
 import 'package:snest/models/models.dart';
+import 'package:snest/modules/modules.dart';
 import 'package:snest/routes/app_pages.dart';
 import 'package:snest/shared/shared.dart';
 import 'package:get/get.dart';
@@ -9,7 +10,11 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 class AuthController extends GetxController {
   final ApiRepository apiRepository;
-  AuthController({required this.apiRepository});
+  final SplashController splashController;
+  AuthController({
+    required this.apiRepository,
+    required this.splashController,
+  });
 
   final GlobalKey<FormState> registerFormKey = GlobalKey<FormState>();
   final registerEmailController = TextEditingController();
@@ -64,6 +69,7 @@ class AuthController extends GetxController {
       final prefs = Get.find<SharedPreferences>();
       if (res!.token.isNotEmpty) {
         prefs.setString(StorageConstants.token, res.token);
+        await splashController.getUserInfo();
         Get.toNamed(Routes.HOME);
       }
     }

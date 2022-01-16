@@ -46,4 +46,24 @@ class ApiRepository {
     }
     return [];
   }
+
+  Future<List<Comment>> getComments(
+    PaginationRequest request,
+    String postUid,
+  ) async {
+    final res =
+        await apiProvider.pagination('user/post/$postUid/comment', request);
+    if (res.body['status'] == 0) {
+      return ListCommentResponse.fromJson(res.body['data']).comments;
+    }
+    return [];
+  }
+
+  Future<Post?> createPost(CreatePostRequest request) async {
+    final res = await apiProvider.createPost(request);
+    if (res.body['status'] == 0) {
+      return Post.fromJson(res.body['data']);
+    }
+    return null;
+  }
 }

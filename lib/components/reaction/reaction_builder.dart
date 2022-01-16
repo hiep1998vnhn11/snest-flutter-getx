@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:snest/util/format/number.dart';
+import 'package:snest/models/response/posts_response.dart';
 
 class ReactionBuilder {
   static Widget buildLikeGroup(List likeGroup, int totalLike) {
@@ -25,51 +26,51 @@ class ReactionBuilder {
           );
   }
 
-  static Widget buildLikeItem(Map<String, dynamic> like) {
-    if (like['status'] == 1) {
+  static Widget buildLikeItem(LikeGroup like) {
+    if (like.status == 1) {
       return const CircleAvatar(
-        backgroundImage: AssetImage('images/reactions/like.png'),
+        backgroundImage: AssetImage('assets/reactions/like.png'),
         radius: 9,
       );
     }
-    if (like['status'] == 2) {
+    if (like.status == 2) {
       return const CircleAvatar(
-        backgroundImage: AssetImage('images/reactions/love.png'),
+        backgroundImage: AssetImage('assets/reactions/love.png'),
         radius: 9,
       );
     }
-    if (like['status'] == 3) {
+    if (like.status == 3) {
       return const CircleAvatar(
-        backgroundImage: AssetImage('images/reactions/care.png'),
+        backgroundImage: AssetImage('assets/reactions/care.png'),
         radius: 9,
       );
     }
-    if (like['status'] == 4) {
+    if (like.status == 4) {
       return const CircleAvatar(
-        backgroundImage: AssetImage('images/reactions/haha.png'),
+        backgroundImage: AssetImage('assets/reactions/haha.png'),
         radius: 9,
       );
     }
-    if (like['status'] == 5) {
+    if (like.status == 5) {
       return const CircleAvatar(
-        backgroundImage: AssetImage('images/reactions/wow.png'),
+        backgroundImage: AssetImage('assets/reactions/wow.png'),
         radius: 9,
       );
     }
-    if (like['status'] == 6) {
+    if (like.status == 6) {
       return const CircleAvatar(
-        backgroundImage: AssetImage('images/reactions/sad.png'),
+        backgroundImage: AssetImage('assets/reactions/sad.png'),
         radius: 9,
       );
     }
-    if (like['status'] == 7) {
+    if (like.status == 7) {
       return const CircleAvatar(
-        backgroundImage: AssetImage('images/reactions/angry.png'),
+        backgroundImage: AssetImage('assets/reactions/angry.png'),
         radius: 9,
       );
     }
     return const CircleAvatar(
-      backgroundImage: AssetImage('images/reactions/like.png'),
+      backgroundImage: AssetImage('assets/reactions/like.png'),
       radius: 9,
     );
   }

@@ -20,6 +20,10 @@ class ApiProvider extends BaseProvider {
   }
 
   Future<Response> pagination(String path, PaginationRequest data) {
-    return post(path, data.toJson());
+    return get(path, query: data.toJson());
+  }
+
+  Future<Response> createPost(CreatePostRequest request) {
+    return post('user/post', request.toJson());
   }
 }

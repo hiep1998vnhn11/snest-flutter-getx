@@ -1,5 +1,6 @@
 import 'package:snest/modules/auth/auth.dart';
 import 'package:snest/modules/home/home.dart';
+import 'package:snest/modules/home/tabs/post/post_detail.dart';
 import 'package:snest/modules/me/cards/cards_screen.dart';
 import 'package:snest/modules/modules.dart';
 import 'package:get/get.dart';
@@ -25,11 +26,16 @@ class AppPages {
       ],
     ),
     GetPage(
-        name: Routes.HOME,
-        page: () => HomeScreen(),
-        binding: HomeBinding(),
-        children: [
-          GetPage(name: Routes.CARDS, page: () => CardsScreen()),
-        ]),
+      name: Routes.HOME,
+      page: () => HomeScreen(),
+      binding: HomeBinding(),
+      children: [
+        GetPage(name: Routes.CARDS, page: () => CardsScreen()),
+        GetPage(
+          name: '${Routes.POST_DETAIL}/:post_uid',
+          page: () => PostScreen(),
+        ),
+      ],
+    ),
   ];
 }

@@ -1,25 +1,32 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:snest/api/api.dart';
+import 'package:snest/models/models.dart';
 import 'package:snest/models/response/users_response.dart';
-import 'package:snest/models/response/user_response.dart';
 import 'package:snest/modules/home/home.dart';
-import 'package:snest/shared/shared.dart';
 import 'package:snest/routes/app_pages.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'tabs/darhboard/dashboard.dart';
+import 'package:snest/modules/splash/splash_controller.dart';
+import 'dart:async';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'tabs/post/post_controller.dart';
 
 class HomeController extends GetxController {
   final ApiRepository apiRepository;
+  final SplashController splashController;
+
+  Timer? debounce;
   final ScrollController scrollController = ScrollController();
-  HomeController({required this.apiRepository});
+  final RefreshController refreshController = RefreshController(
+    initialRefresh: false,
+  );
+  HomeController({
+    required this.apiRepository,
+    required this.splashController,
+  });
 
   var currentTab = MainTabs.home.obs;
-  var users = Rxn<UsersResponse>();
   var user = Rxn<Datum>();
-  var currentUser = Rxn<CurrentUser>();
   var stories = Rx<List<String>>([
     'Story 1',
     'Story 2',
@@ -30,6 +37,14 @@ class HomeController extends GetxController {
     'Story 7',
     'Story 8',
   ]);
+  var storiesCount = Rx<int>(8);
+  var loadingStory = Rx<bool>(false);
+
+  var posts = Rx<List<Post>>([]);
+  var currentPost = Rxn<Post>();
+  var isDone = Rx<bool>(false);
+  var count = Rx<int>(12);
+  var postCount = Rx<int>(0);
 
   late MainTab mainTab;
   late DiscoverTab discoverTab;
@@ -47,14 +62,64 @@ class HomeController extends GetxController {
     meTab = MeTab();
 
     scrollController.addListener(_scrollListener);
-    await getUserInfo();
+    getPosts(isRefresh: true);
+  }
+
+  Future<void> getPosts({bool isRefresh = false}) async {
+    count.value++;
+    if (isRefresh == false && isDone.value == true) return;
+    try {
+      int offset = 0;
+      if (isRefresh) {
+        offset = 0;
+        postCount.value = 0;
+        posts.value.clear();
+      } else {
+        offset = posts.value.length;
+      }
+      final response = await apiRepository.getPosts(PaginationRequest(
+        offset: offset,
+        limit: 5,
+      ));
+      posts.value.addAll(response);
+      postCount.value += response.length;
+      isDone.value = response.length < 5;
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void toPostDetail(Post post) {
+    final PostController postController = Get.put<PostController>(
+      PostController(
+        apiRepository: Get.find(),
+        splashController: Get.find(),
+      ),
+    );
+    postController.post.value = post;
+    Get.toNamed('${Routes.HOME}${Routes.POST_DETAIL}/${post.uid}');
+    postController.fetchComments();
   }
 
   void _scrollListener() {
-    if (scrollController.position.pixels + 50 >=
-        scrollController.position.maxScrollExtent) {
-      print('fetchStory');
-    }
+    if (debounce?.isActive ?? false) debounce!.cancel();
+    debounce = Timer(const Duration(milliseconds: 500), () async {
+      if (scrollController.position.pixels + 50 >=
+          scrollController.position.maxScrollExtent) {
+        if (loadingStory.value) return;
+        await Future.delayed(const Duration(milliseconds: 1500));
+        loadingStory.value = true;
+        stories.value.addAll([
+          'Story ${storiesCount.value + 1}',
+          'Story ${storiesCount.value + 2}',
+          'Story ${storiesCount.value + 3}',
+          'Story ${storiesCount.value + 4}',
+          'Story ${storiesCount.value + 5}',
+        ]);
+        storiesCount.value += 5;
+        loadingStory.value = false;
+      }
+    });
   }
 
   Future<void> loadUsers() async {
@@ -69,16 +134,29 @@ class HomeController extends GetxController {
   void signout() {
     var prefs = Get.find<SharedPreferences>();
     prefs.clear();
+    posts.value.clear();
+    currentPost.value = null;
+    splashController.currentUser.value = null;
+    stories.value.clear();
+    storiesCount.value = 0;
+    postCount.value = 0;
+    currentTab.value = MainTabs.home;
     Get.toNamed(Routes.AUTH);
   }
 
-  Future<void> getUserInfo() async {
+  Future<void> createPost({String? content}) async {
     try {
-      final user = await apiRepository.me();
-      print('fetchUser');
-      currentUser.value = user;
+      final post = await apiRepository.createPost(
+        CreatePostRequest(content: content),
+      );
+      if (post != null) {
+        posts.value.insert(0, post);
+        currentTab.value = MainTabs.home;
+      } else {
+        throw Exception('Error');
+      }
     } catch (e) {
-      print(e);
+      throw Exception(e);
     }
   }
 
@@ -129,5 +207,7 @@ class HomeController extends GetxController {
   void dispose() {
     super.dispose();
     scrollController.dispose();
+    debounce?.cancel();
+    refreshController.dispose();
   }
 }

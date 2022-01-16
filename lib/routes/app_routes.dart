@@ -7,4 +7,7 @@ abstract class Routes {
   static const REGISTER = '/register';
   static const HOME = '/home';
   static const CARDS = '/cards';
+
+  static const POST_PRIVACY = '/post_privacy';
+  static const POST_DETAIL = '/post';
 }

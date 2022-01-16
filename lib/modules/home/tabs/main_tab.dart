@@ -1,31 +1,47 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:snest/models/response/users_response.dart';
 import 'package:snest/modules/home/home.dart';
 import 'package:snest/components/app_avatar.dart';
-import 'package:snest/shared/constants/colors.dart';
-
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:snest/components/post_item.dart';
+import 'package:snest/modules/modules.dart';
+import 'package:snest/models/request/posts_request.dart' show PostPrivacyValue;
+import 'package:snest/routes/app_pages.dart';
+import 'post/post_privacy.dart';
 
 class MainTab extends GetView<HomeController> {
-  final RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  final SplashController authController = Get.find();
 
   void _onRefresh() async {
-    // await _fetchPost(isRefresh: true);
-    _refreshController.refreshCompleted();
+    await controller.getPosts(isRefresh: true);
+    controller.refreshController.refreshCompleted();
   }
 
   void _onLoading() async {
-    // final success = await _fetchPost(isRefresh: false);
-    final success = true;
-    if (success) {
-      _refreshController.loadComplete();
-    } else {
-      _refreshController.loadNoData();
+    try {
+      await controller.getPosts(isRefresh: false);
+      controller.refreshController.loadComplete();
+    } catch (e) {
+      print(e);
+      controller.refreshController.loadNoData();
+    }
+  }
+
+  Future<void> _handleLike(int postId, String? likeStatus) async {
+    try {
+      final int index = controller.posts.value.indexWhere(
+        (post) => post.id == postId,
+      );
+      if (index == -1) return;
+      var post = controller.posts.value[index];
+      post.content = '123123';
+      print(post.content);
+      controller.posts.value[index] = post;
+      // controller.posts.value[index].content = '123123';
+      // post.content = 'Testtt';
+    } catch (err) {
+      print(err);
     }
   }
 
@@ -62,17 +78,22 @@ class MainTab extends GetView<HomeController> {
           child: ListView(
             children: [
               _buildAction(),
-              SizedBox(
-                height: 6,
+              Container(
+                height: 8,
+                color: Colors.grey[300],
               ),
               _buildListStory(),
+              Container(
+                height: 8,
+                color: Colors.grey[300],
+              ),
               _buildListPost(),
             ],
           ),
           onRefresh: _onRefresh,
           onLoading: _onLoading,
           header: const WaterDropMaterialHeader(),
-          controller: _refreshController,
+          controller: controller.refreshController,
           footer: CustomFooter(
             builder: _buildCustomFooter,
           ),
@@ -82,43 +103,27 @@ class MainTab extends GetView<HomeController> {
   }
 
   Widget _buildListPost() {
-    return Column(children: [
-      ...controller.stories.value.map(
-        (post) => SizedBox(
-          height: 300,
-          child: Text(post),
-        ),
-      ),
-    ]);
+    return ListView.builder(
+      itemBuilder: _itemBuilder,
+      itemCount: controller.postCount.value,
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      physics: ScrollPhysics(),
+    );
   }
 
-  Widget _buildGridView() {
-    return StaggeredGridView.countBuilder(
-      crossAxisCount: 4,
-      itemCount: data!.length,
-      itemBuilder: (BuildContext context, int index) => Container(
-        color: ColorConstants.lightGray,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Text('${data![index].lastName} ${data![index].firstName}'),
-            CachedNetworkImage(
-              fit: BoxFit.fill,
-              imageUrl: data![index].avatar ??
-                  'https://reqres.in/img/faces/1-image.jpg',
-              placeholder: (context, url) => Image(
-                image: AssetImage('assets/images/icon_success.png'),
-              ),
-              errorWidget: (context, url, error) => Icon(Icons.error),
-            ),
-            Text('${data![index].email}'),
-          ],
-        ),
+  Widget _itemBuilder(BuildContext context, int index) {
+    final post = controller.posts.value[index];
+    return InkWell(
+      onTap: () {
+        controller.toPostDetail(post);
+      },
+      child: PostItem(
+        post: post,
+        onLike: _handleLike,
+        onOptions: () => _showOptionDialog(context),
+        onShare: () => _showShareDialog(context),
       ),
-      staggeredTileBuilder: (int index) =>
-          new StaggeredTile.count(2, index.isEven ? 3 : 2),
-      mainAxisSpacing: 4.0,
-      crossAxisSpacing: 4.0,
     );
   }
 
@@ -126,59 +131,60 @@ class MainTab extends GetView<HomeController> {
     return Container(
       height: 200,
       color: Colors.white,
-      child: ListView(
-        controller: controller.scrollController,
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        scrollDirection: Axis.horizontal,
-        children: [
-          SizedBox(
-            width: 5,
+      child: Obx(
+        () => ListView.builder(
+          controller: controller.scrollController,
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          scrollDirection: Axis.horizontal,
+          itemBuilder: _buildStoryItem,
+          itemCount: controller.storiesCount.value,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStoryItem(BuildContext context, int index) {
+    final story = controller.stories.value[index];
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.only(bottom: 8, left: 4, top: 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              AppAvatar(
+                imageUrl: 'https://reqres.in/img/faces/1-image.jpg',
+                size: 35,
+                showOnline: false,
+              ),
+              Text(
+                story,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
-          ...controller.stories.value.map(
-            (story) => Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(bottom: 8, left: 4, top: 4),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      AppAvatar(
-                        imageUrl: 'https://reqres.in/img/faces/1-image.jpg',
-                        size: 35,
-                        showOnline: false,
-                      ),
-                      Text(
-                        story,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  width: 120,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(
-                      color: Colors.black12,
-                      width: 1,
-                    ),
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/cm0.jpeg'),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-              ],
+          width: 120,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: Colors.black12,
+              width: 1,
+            ),
+            image: DecorationImage(
+              image: AssetImage('assets/images/cm0.jpeg'),
+              fit: BoxFit.cover,
             ),
           ),
-        ],
-      ),
+        ),
+        SizedBox(
+          width: 5,
+        ),
+      ],
     );
   }
 
@@ -192,7 +198,7 @@ class MainTab extends GetView<HomeController> {
             child: Row(
               children: [
                 AppAvatar(
-                  imageUrl: controller.currentUser.value?.avatar,
+                  imageUrl: authController.currentUser.value?.avatar,
                   size: 40,
                   borderWidth: 1,
                   borderColor: Colors.grey[0],
@@ -206,7 +212,8 @@ class MainTab extends GetView<HomeController> {
                   child: Container(
                     height: 40,
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () =>
+                          controller.currentTab.value = MainTabs.resource,
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -295,6 +302,194 @@ class MainTab extends GetView<HomeController> {
     );
   }
 
+  _showShareDialog(context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (builder) {
+        return Container(
+          height: 450,
+          color: Colors.transparent,
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10.0),
+                topRight: Radius.circular(10.0),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10.0, // has the effect of softening the shadow
+                  spreadRadius: 0.0, // has the effect of extending the shadow
+                )
+              ],
+            ),
+            alignment: Alignment.topLeft,
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Obx(
+                    () => Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            authController.currentUser.value?.avatar == null
+                                ? const CircleAvatar(
+                                    backgroundImage: AssetImage(
+                                      'assets.images/default.png',
+                                    ),
+                                  )
+                                : CircleAvatar(
+                                    radius: 20,
+                                    backgroundImage: NetworkImage(
+                                      authController.currentUser.value!.avatar!,
+                                    ),
+                                  ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    authController
+                                            .currentUser.value?.fullname ??
+                                        '',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        height: 30,
+                                        width: 130,
+                                        child: TextButton(
+                                          onPressed: () async {
+                                            final PostPrivacyValue? value =
+                                                await Get.to(
+                                              () => PostPrivacy(
+                                                value: PostPrivacyValue.public,
+                                              ),
+                                            );
+                                            print(value);
+                                          },
+                                          child: Row(
+                                            children: const [
+                                              Icon(
+                                                Icons.public,
+                                                color: Colors.black,
+                                                size: 16,
+                                              ),
+                                              Text(
+                                                'Công khai',
+                                                style: TextStyle(
+                                                    color: Colors.black),
+                                              ),
+                                              Icon(
+                                                Icons.arrow_drop_down,
+                                                color: Colors.black,
+                                                size: 16,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.open_in_full,
+                            size: 16,
+                          ),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  _showOptionDialog(context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (builder) {
+        return Container(
+          height: 300,
+          color: Colors.transparent,
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10.0),
+                topRight: Radius.circular(10.0),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10.0, // has the effect of softening the shadow
+                  spreadRadius: 0.0, // has the effect of extending the shadow
+                )
+              ],
+            ),
+            alignment: Alignment.topLeft,
+            child: Column(
+              children: <Widget>[
+                ListTile(
+                  leading: Icon(Icons.edit),
+                  title: Text('Chỉnh sửa'),
+                  onTap: () {},
+                ),
+                const Divider(
+                  height: 1,
+                ),
+                ListTile(
+                  leading: Icon(Icons.edit),
+                  title: Text('Chỉnh sửa'),
+                  onTap: () {},
+                ),
+                const Divider(
+                  height: 1,
+                ),
+                ListTile(
+                  leading: Icon(Icons.edit),
+                  title: Text('Chỉnh sửa'),
+                  onTap: () {},
+                ),
+                const Divider(
+                  height: 1,
+                ),
+                ListTile(
+                  leading: Icon(Icons.edit),
+                  title: Text('Chỉnh sửa'),
+                  onTap: () {},
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildCustomFooter(BuildContext context, LoadStatus? mode) {
     Widget body;
     if (mode == LoadStatus.idle) {
@@ -312,9 +507,5 @@ class MainTab extends GetView<HomeController> {
       height: 55.0,
       child: Center(child: body),
     );
-  }
-
-  List<Datum>? get data {
-    return controller.users.value == null ? [] : controller.users.value!.data;
   }
 }

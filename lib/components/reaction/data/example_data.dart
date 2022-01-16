@@ -82,61 +82,41 @@ final reactions = [
       ),
     ),
   ),
-  Reaction<String>(
-    value: '6',
-    title: _buildTitle('Buồn'),
-    previewIcon: _buildReactionsPreviewIcon('assets/reactions/sad.png'),
-    icon: _buildReactionsIcon(
-      'assets/reactions/sad.png',
-      const Text(
-        'Buồn',
-        style: TextStyle(
-          color: Color(0XFFf05766),
-        ),
-      ),
-    ),
-  ),
-  Reaction<String>(
-    value: '7',
-    title: _buildTitle('Giận dữ'),
-    previewIcon: _buildReactionsPreviewIcon('assets/reactions/angry.png'),
-    icon: _buildReactionsIcon(
-      'assets/reactions/angry.png',
-      const Text(
-        'Giận dữ',
-        style: TextStyle(
-          color: Color(0XFFf05766),
-        ),
-      ),
-    ),
-  ),
+  // Reaction<String>(
+  //   value: '6',
+  //   title: _buildTitle('Buồn'),
+  //   previewIcon: _buildReactionsPreviewIcon('assets/reactions/sad.png'),
+  //   icon: _buildReactionsIcon(
+  //     'assets/reactions/sad.png',
+  //     const Text(
+  //       'Buồn',
+  //       style: TextStyle(
+  //         color: Color(0XFFf05766),
+  //       ),
+  //     ),
+  //   ),
+  // ),
+  // Reaction<String>(
+  //   value: '7',
+  //   title: _buildTitle('Giận dữ'),
+  //   previewIcon: _buildReactionsPreviewIcon('assets/reactions/angry.png'),
+  //   icon: _buildReactionsIcon(
+  //     'assets/reactions/angry.png',
+  //     const Text(
+  //       'Giận dữ',
+  //       style: TextStyle(
+  //         color: Color(0XFFf05766),
+  //       ),
+  //     ),
+  //   ),
+  // ),
 ];
-
-Padding _builFlagsdPreviewIcon(String path, String text) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-    child: Column(
-      children: [
-        Text(
-          text,
-          style: const TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w300,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 4.5),
-        Image.asset(path, height: 25),
-      ],
-    ),
-  );
-}
 
 Container _buildTitle(String title) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 7.5, vertical: 2.5),
     decoration: BoxDecoration(
-      color: Colors.red,
+      color: Colors.black.withOpacity(0.8),
       borderRadius: BorderRadius.circular(15),
     ),
     child: Text(
@@ -153,15 +133,7 @@ Container _buildTitle(String title) {
 Padding _buildReactionsPreviewIcon(String path) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 3.5, vertical: 5),
-    child: Image.asset(path, height: 30),
-  );
-}
-
-Image _buildIcon(String path) {
-  return Image.asset(
-    path,
-    height: 30,
-    width: 30,
+    child: Image.asset(path, height: 40),
   );
 }
 
@@ -172,8 +144,8 @@ Container _buildReactionsIcon(String path, Text text) {
       children: <Widget>[
         Image.asset(
           path,
-          height: 15,
-          width: 15,
+          height: 20,
+          width: 20,
         ),
         const SizedBox(width: 5),
         text,
@@ -183,7 +155,7 @@ Container _buildReactionsIcon(String path, Text text) {
 }
 
 class PostBuilder {
-  static Widget _buildLikeItem(Map<String, dynamic> like) {
+  static Widget buildLikeItem(Map<String, dynamic> like) {
     if (like['status'] == 1) {
       return const CircleAvatar(
         backgroundImage: AssetImage('assets/reactions/like.png'),

@@ -20,8 +20,8 @@ class PaginationRequest {
       );
 
   Map<String, dynamic> toJson() => {
-        "offset": offset,
-        "limit": limit,
+        "offset": '$offset',
+        "limit": '$limit',
         "searchKey": searchKey,
       };
 }

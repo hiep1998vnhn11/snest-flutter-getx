@@ -1,12 +1,12 @@
 import 'package:get/get.dart';
 
-import 'auth_controller.dart';
+import 'post_controller.dart';
 
-class AuthBinding implements Bindings {
+class HomeBinding implements Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<AuthController>(
-      () => AuthController(
+    Get.lazyPut<PostController>(
+      () => PostController(
         apiRepository: Get.find(),
         splashController: Get.find(),
       ),

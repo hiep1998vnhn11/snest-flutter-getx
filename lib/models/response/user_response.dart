@@ -127,9 +127,12 @@ class UserInfo {
 }
 
 class OnlineStatus {
-  OnlineStatus({this.status, this.time = ''});
+  OnlineStatus({
+    this.status,
+    this.time,
+  });
 
-  String time;
+  String? time;
   bool? status;
 
   factory OnlineStatus.fromJson(Map<String, dynamic> json) => OnlineStatus(
@@ -140,5 +143,35 @@ class OnlineStatus {
   Map<String, dynamic> toJson() => {
         "time": time,
         "status": status,
+      };
+}
+
+class CompressUser {
+  CompressUser({
+    required this.id,
+    required this.url,
+    required this.onlineStatus,
+    required this.fullname,
+    this.avatar,
+  });
+  int id;
+  String url;
+  String? avatar;
+  String fullname;
+  OnlineStatus onlineStatus;
+  factory CompressUser.fromJson(Map<String, dynamic> json) => CompressUser(
+        id: json["id"],
+        url: json["url"],
+        onlineStatus: OnlineStatus.fromJson(json["online_status"]),
+        fullname: json["full_name"],
+        avatar: json["profile_photo_path"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "url": url,
+        "online_status": onlineStatus.toJson(),
+        "full_name": fullname,
+        "profile_photo_path": avatar,
       };
 }
