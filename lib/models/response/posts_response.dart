@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:snest/util/format/date.dart';
+import 'package:snest/util/const.dart';
 
 class ListPostResponse {
   List<Post> posts;
@@ -38,6 +39,7 @@ class Post {
     this.imagesCount = 0,
     required this.uid,
     this.likeGroup = const [],
+    this.media = const [],
   });
 
   int id;
@@ -54,6 +56,7 @@ class Post {
   List<LikeGroup> likeGroup;
   String createdAt;
   String? updatedAt;
+  List<PostMedia> media;
 
   factory Post.fromRawJson(String str) => Post.fromJson(json.decode(str));
 
@@ -71,10 +74,16 @@ class Post {
       userUrl: json["user_url"],
       userAvatar: json["user_profile_photo_path"],
       commentsCount: json["comments_count"] ?? 0,
-      likesCount: (json["like_group"] as List)
-          .fold(0, (value, element) => value + element['counter'] as int),
+      likesCount: json['likes_count'] ?? 0,
       likeStatus: json["likeStatus"],
       imagesCount: json["images_count"] ?? 0,
+      media: json["media"] != null
+          ? List<PostMedia>.from(
+              json["media"].map(
+                (x) => PostMedia.fromJson(x),
+              ),
+            )
+          : [],
       likeGroup: List<LikeGroup>.from(
         json["like_group"].map(
           (x) => LikeGroup.fromJson(x),
@@ -100,6 +109,31 @@ class Post {
         "like_group": List<dynamic>.from(
           likeGroup.map((x) => x.toJson()),
         ),
+        "media": List<dynamic>.from(
+          media.map((x) => x.toJson()),
+        ),
+      };
+}
+
+class PostMedia {
+  PostMedia({required this.url, required this.type});
+
+  String url;
+  String type;
+
+  factory PostMedia.fromRawJson(String str) =>
+      PostMedia.fromJson(json.decode(str));
+
+  String toRawJson() => json.encode(toJson());
+
+  factory PostMedia.fromJson(Map<String, dynamic> json) => PostMedia(
+        url: '${Constants.storageUrl}${json["url"]}',
+        type: json["type"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "url": url,
+        "type": type,
       };
 }
 

@@ -7,12 +7,14 @@ import 'package:flutter_reaction_button/flutter_reaction_button.dart';
 import 'package:snest/components/reaction/data/example_data.dart' as example;
 import 'package:snest/components/reaction/reaction_builder.dart';
 import 'package:snest/models/models.dart' show Post;
+import 'post_media_grid.dart';
 
 class PostItem extends StatelessWidget {
   final Post post;
   final Function(int, String?) onLike;
   final Function() onOptions;
   final Function() onShare;
+  final Function() onDetail;
 
   final HomeController authController = Get.find();
 
@@ -22,6 +24,7 @@ class PostItem extends StatelessWidget {
     required this.onLike,
     required this.onOptions,
     required this.onShare,
+    required this.onDetail,
   }) : super(key: key);
 
   @override
@@ -67,9 +70,7 @@ class PostItem extends StatelessWidget {
               padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
               child: Text(post.content ?? ''),
             ),
-            GridImage(
-              images: [],
-            ),
+            PostMediaGrid(media: post.media),
             ReactionBuilder.buildLikeGroup(post.likeGroup, post.likesCount),
             const Divider(
               height: 1,
@@ -109,7 +110,7 @@ class PostItem extends StatelessWidget {
                     //     pid: pid,
                     //   ),
                     // ),
-                    onTap: () {},
+                    onTap: onDetail,
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: Row(

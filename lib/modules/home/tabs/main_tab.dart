@@ -7,7 +7,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:snest/components/post_item.dart';
 import 'package:snest/modules/modules.dart';
 import 'package:snest/models/request/posts_request.dart' show PostPrivacyValue;
-import 'package:snest/routes/app_pages.dart';
 import 'post/post_privacy.dart';
 
 class MainTab extends GetView<HomeController> {
@@ -67,7 +66,10 @@ class MainTab extends GetView<HomeController> {
           ),
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.message_rounded),
+            icon: Image.asset(
+              'assets/icons/messager.png',
+              width: 20,
+            ),
           ),
         ],
       ),
@@ -114,16 +116,12 @@ class MainTab extends GetView<HomeController> {
 
   Widget _itemBuilder(BuildContext context, int index) {
     final post = controller.posts.value[index];
-    return InkWell(
-      onTap: () {
-        controller.toPostDetail(post);
-      },
-      child: PostItem(
-        post: post,
-        onLike: _handleLike,
-        onOptions: () => _showOptionDialog(context),
-        onShare: () => _showShareDialog(context),
-      ),
+    return PostItem(
+      post: post,
+      onLike: _handleLike,
+      onOptions: () => _showOptionDialog(context),
+      onShare: () => _showShareDialog(context),
+      onDetail: () => controller.toPostDetail(post),
     );
   }
 

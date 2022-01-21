@@ -10,6 +10,7 @@ import 'post/post_privacy.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:snest/models/request/posts_request.dart' show PostPrivacyValue;
+import 'package:snest/api/api_provider.dart';
 
 typedef void OnPickImageCallback(
     double? maxWidth, double? maxHeight, int? quality);
@@ -74,7 +75,16 @@ class _ResourceTabState extends State<ResourceTab> {
       setState(() {
         _isLoading = true;
       });
-      await controller.createPost(content: content);
+      final id = await controller.createPost(content: content);
+      if (_imageFileList != null) {
+        for (final file in _imageFileList!) {
+          await ApiProvider.uploadFile(
+            file: file,
+            objectId: id,
+            objectType: 'post',
+          );
+        }
+      }
       _toastSuccess('Đăng bài viết thành công!');
     } catch (e) {
       print(e);
@@ -274,18 +284,13 @@ class _ResourceTabState extends State<ResourceTab> {
                     width: 16,
                     height: 16,
                     child: CircularProgressIndicator(
-                      color: Colors.white,
                       strokeWidth: 1.5,
                     ),
                   )
                 : Text('Đăng'),
-            style: _isDisabled
-                ? TextButton.styleFrom(
-                    primary: Colors.grey.shade500,
-                  )
-                : TextButton.styleFrom(
-                    primary: Colors.white,
-                  ),
+            style: TextButton.styleFrom(
+              primary: Colors.blue,
+            ),
           ),
         ],
       ),

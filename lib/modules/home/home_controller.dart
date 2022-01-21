@@ -144,14 +144,13 @@ class HomeController extends GetxController {
     Get.toNamed(Routes.AUTH);
   }
 
-  Future<void> createPost({String? content}) async {
+  Future<int> createPost({String? content}) async {
     try {
       final post = await apiRepository.createPost(
         CreatePostRequest(content: content),
       );
       if (post != null) {
-        posts.value.insert(0, post);
-        currentTab.value = MainTabs.home;
+        return post.id;
       } else {
         throw Exception('Error');
       }
