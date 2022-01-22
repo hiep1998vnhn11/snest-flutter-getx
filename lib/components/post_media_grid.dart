@@ -4,25 +4,35 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 class PostMediaGrid extends StatelessWidget {
   final List<PostMedia> media;
-  PostMediaGrid({required this.media});
+  final Function() onTap;
+  PostMediaGrid({
+    required this.media,
+    required this.onTap,
+  });
 
-  Widget _buildImage({required String url, int rowCount = 1}) {
+  Widget _buildImage({
+    required String url,
+    int rowCount = 1,
+    required Function() onTap,
+  }) {
     final double height = rowCount > 2 ? 200.0 : 250.0;
     return Expanded(
       child: InkWell(
         child: SizedBox(
-            height: height,
+          height: height,
+          child: Hero(
+            tag: url,
             child: CachedNetworkImage(
               imageUrl: url,
-              fit: BoxFit.fill,
+              fit: BoxFit.cover,
               placeholder: (context, url) => Center(
                 child: CircularProgressIndicator(),
               ),
               errorWidget: (context, url, error) => Icon(Icons.error),
-            )),
-        onTap: () {
-          print('123');
-        },
+            ),
+          ),
+        ),
+        onTap: onTap,
       ),
     );
   }
@@ -34,6 +44,7 @@ class PostMediaGrid extends StatelessWidget {
           (item) => _buildImage(
             url: item.url,
             rowCount: firstRow.length,
+            onTap: onTap,
           ),
         ),
       ],
@@ -44,7 +55,7 @@ class PostMediaGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final int length = media.length;
     final List<PostMedia> firstRow =
-        length > 0 ? media.sublist(0, media.length - 1) : [];
+        length > 0 ? media.sublist(0, length > 2 ? length - 1 : 1) : [];
     final String? lastImage = length > 1 ? media.last.url : null;
     return Column(
       children: [
@@ -56,7 +67,10 @@ class PostMediaGrid extends StatelessWidget {
             ? SizedBox()
             : Row(
                 children: [
-                  _buildImage(url: lastImage),
+                  _buildImage(
+                    url: lastImage,
+                    onTap: onTap,
+                  ),
                 ],
               ),
       ],

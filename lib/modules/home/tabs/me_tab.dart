@@ -1,7 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:snest/modules/home/home.dart';
 import 'package:snest/modules/modules.dart';
 import 'package:get/get.dart';
+import 'package:snest/routes/routes.dart';
 
 class MeTab extends GetView<HomeController> {
   final SplashController authController = Get.find();
@@ -87,10 +89,20 @@ class MeTab extends GetView<HomeController> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Text(
-                                    'Xem trang cá nhân của bạn',
-                                    style:
-                                        TextStyle(color: Colors.grey.shade600),
+                                  RichText(
+                                    text: TextSpan(
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          Get.toNamed(
+                                            '${Routes.HOME}${Routes.PROFILE}/${authController.currentUser.value!.url}',
+                                          );
+                                        },
+                                      text: 'Xem trang cá nhân của bạn',
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 12,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),

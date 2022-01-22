@@ -6,10 +6,12 @@ class CreatePostRequest {
   CreatePostRequest({
     this.content,
     this.privacy = PostPrivacyValue.public,
+    this.media,
   });
 
   String? content;
   PostPrivacyValue privacy;
+  List<int>? media;
 
   factory CreatePostRequest.fromRawJson(String str) =>
       CreatePostRequest.fromJson(
@@ -32,6 +34,11 @@ class CreatePostRequest {
     return CreatePostRequest(
       content: json["content"],
       privacy: privacy,
+      media: json["media"] == null
+          ? null
+          : List<int>.from(
+              json["media"].map((x) => x),
+            ),
     );
   }
 
@@ -51,6 +58,7 @@ class CreatePostRequest {
     return {
       "content": content,
       'privacy': privacyString,
+      'media': media == null ? null : json.encode(media),
     };
   }
 }

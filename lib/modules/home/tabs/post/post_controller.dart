@@ -5,6 +5,7 @@ import 'package:snest/api/api.dart';
 import 'package:snest/models/models.dart';
 import 'package:get/get.dart';
 import 'package:snest/modules/splash/splash_controller.dart';
+import 'package:snest/routes/app_pages.dart';
 import 'dart:async';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -22,7 +23,7 @@ class PostController extends GetxController {
     required this.splashController,
   });
 
-  var images = Rx<List>([]);
+  var images = Rx<List<PostMedia>>([]);
   var post = Rxn<Post>();
   var comments = Rx<List<Comment>>([]);
   var showCommentButton = Rx(false);
@@ -30,19 +31,25 @@ class PostController extends GetxController {
   var commentCount = Rx(0);
   var isOver = Rx(false);
   var isLoading = Rx(false);
+  var isShowFull = Rx(false);
 
   @override
   void onInit() async {
     super.onInit();
   }
 
+  toggleIsShowFull() {
+    isShowFull.value = !isShowFull.value;
+  }
+
   Future<void> fetchPost() async {
     try {
-      // final String url = '/v1/user/post/${widget.pid}';
-      // final Map<String, dynamic> res = await HttpService.get(url);
-      // final List<String> imgs = (res['images'] as List)
-      //     .map((image) => image['path'] as String)
-      //     .toList();
+      if (post.value == null) return;
+      images.value = post.value!.media;
+      final res = await apiRepository.getPost(post.value!.uid);
+      if (res == null) return;
+      images.value = res.media;
+      post.value = res;
     } catch (e) {
       print(e);
     }
@@ -153,6 +160,12 @@ class PostController extends GetxController {
     } catch (e) {
       print(e);
     }
+  }
+
+  toPostCompact({String? pid}) {
+    final postId = pid == null ? post.value?.uid : pid;
+    if (postId == null) return;
+    return Get.toNamed('${Routes.HOME}${Routes.POST_DETAIL_COMPACT}/$postId');
   }
 
   @override

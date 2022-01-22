@@ -98,6 +98,7 @@ class HomeController extends GetxController {
     );
     postController.post.value = post;
     Get.toNamed('${Routes.HOME}${Routes.POST_DETAIL}/${post.uid}');
+    postController.fetchPost();
     postController.fetchComments();
   }
 
@@ -144,13 +145,14 @@ class HomeController extends GetxController {
     Get.toNamed(Routes.AUTH);
   }
 
-  Future<int> createPost({String? content}) async {
+  Future<void> createPost({String? content, List<int>? media}) async {
     try {
       final post = await apiRepository.createPost(
-        CreatePostRequest(content: content),
+        CreatePostRequest(content: content, media: media),
       );
       if (post != null) {
-        return post.id;
+        posts.value.insert(0, post);
+        currentTab.value = MainTabs.home;
       } else {
         throw Exception('Error');
       }

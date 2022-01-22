@@ -1,9 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:snest/components/app_avatar.dart';
 import 'package:snest/components/reaction/data/example_data.dart' as example;
 import 'package:flutter_reaction_button/flutter_reaction_button.dart';
-import 'package:snest/util/format/date.dart';
 import 'package:snest/components/reaction/reaction_builder.dart';
 import 'package:snest/modules/splash/splash_controller.dart';
 import 'post_controller.dart';
@@ -12,290 +12,288 @@ class PostScreen extends GetView<PostController> {
   final SplashController authController = Get.find();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 0,
-        title: ListTile(
-          dense: true,
-          leading: const CircleAvatar(
-            backgroundImage: AssetImage('assets/images/default.png'),
-          ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-          title: Text(
-            controller.post.value!.userName,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
+    print('123');
+    return Obx(
+      () => Scaffold(
+        appBar: AppBar(
+          titleSpacing: 0,
+          title: ListTile(
+            dense: true,
+            leading: const CircleAvatar(
+              backgroundImage: AssetImage('assets/images/default.png'),
             ),
-          ),
-          trailing: IconButton(
-              icon: const Icon(
-                Icons.settings_outlined,
-                size: 20,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+            title: Text(
+              controller.post.value!.userName,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
               ),
-              onPressed: () {}),
-          subtitle: Row(
-            children: [
-              Text(controller.post.value!.createdAt),
-              const Text(' . '),
-              ReactionBuilder.buildPrivacy(controller.post.value!.privacy),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: Obx(
-        () => BottomAppBar(
-          notchMargin: 5,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            ),
+            trailing: IconButton(
+                icon: const Icon(
+                  Icons.settings_outlined,
+                  size: 20,
+                ),
+                onPressed: () {}),
+            subtitle: Row(
               children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.camera_alt_outlined,
-                    color: Colors.grey,
-                  ),
-                ),
-                Flexible(
-                  child: Container(
-                    padding: const EdgeInsets.only(
-                        bottom: 10, left: 14, right: 10, top: 5),
-                    decoration: BoxDecoration(
-                      color: Color(0xFEEEEEEE),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Flexible(
-                          child: TextField(
-                            controller: controller.commentController,
-                            onChanged: (text) {
-                              if (text.isEmpty)
-                                controller.showCommentButton.value = false;
-                              else
-                                controller.showCommentButton.value = true;
-                            },
-                            decoration: const InputDecoration.collapsed(
-                              hintText: 'Hãy viết gì đó ...',
-                            ),
-                            focusNode: controller.commentFocusNode,
-                            maxLines: 7,
-                            minLines: 1,
-                            style: TextStyle(fontSize: 14),
-                          ),
-                        ),
-                        controller.showCommentButton.value
-                            ? InkWell(
-                                onTap: () {
-                                  controller.commentFocusNode.unfocus();
-                                  controller.commentController.clear();
-                                  controller.showCommentButton.value = false;
-                                },
-                                child: const Icon(
-                                  Icons.close,
-                                  color: Colors.grey,
-                                ),
-                              )
-                            : SizedBox(),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            print('123');
-                          },
-                          child: const Icon(
-                            Icons.tag_faces_outlined,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                controller.showCommentButton.value
-                    ? IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.send_outlined,
-                          color: Colors.blue,
-                        ),
-                      )
-                    : SizedBox(
-                        width: 14,
-                      ),
+                Text(controller.post.value!.createdAt),
+                const Text(' . '),
+                ReactionBuilder.buildPrivacy(controller.post.value!.privacy),
               ],
             ),
           ),
         ),
-      ),
-      body: ListView(
-        shrinkWrap: true,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Text(controller.post.value?.content ?? ''),
-          ),
-          const Divider(
-            height: 1,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * .2,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: ReactionButtonToggle<String>(
-                      onReactionChanged: (String? value, bool isChecked) {},
-                      reactions: example.reactions,
-                      initialReaction: example.defaultInitialReaction,
-                      selectedReaction: example.reactions[1],
-                      isChecked: false,
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () => {},
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Container(
-                      color: Colors.transparent,
-                      child: Row(
-                        children: <Widget>[
-                          Image.asset('assets/icons/comment.png', height: 20),
-                          const SizedBox(width: 5),
-                          const Text('Bình luận'),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        duration: Duration(seconds: 2),
-                        content: Text(
-                          'Share image',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Container(
-                      color: Colors.transparent,
-                      child: Row(
-                        children: <Widget>[
-                          Image.asset('assets/icons/share.png', height: 20),
-                          const SizedBox(width: 5),
-                          const Text('chia sẻ'),
-                        ],
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          const Divider(
-            height: 1,
-          ),
-          Column(
-            children: controller.images.value.map((image) {
-              return Column(
+        bottomNavigationBar: Obx(
+          () => BottomAppBar(
+            notchMargin: 5,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ClipRRect(
-                    child: Image.network(
-                      image,
-                      width: MediaQuery.of(context).size.width,
-                      fit: BoxFit.fitHeight,
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.camera_alt_outlined,
+                      color: Colors.grey,
                     ),
                   ),
-                  const Divider(),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * .2,
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: ReactionButtonToggle<String>(
-                              onReactionChanged:
-                                  (String? value, bool isChecked) {
-                                print(
-                                    'Selected value: $value, isChecked: $isChecked');
+                  Flexible(
+                    child: Container(
+                      padding: const EdgeInsets.only(
+                          bottom: 10, left: 14, right: 10, top: 5),
+                      decoration: BoxDecoration(
+                        color: Color(0xFEEEEEEE),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            child: TextField(
+                              controller: controller.commentController,
+                              onChanged: (text) {
+                                if (text.isEmpty)
+                                  controller.showCommentButton.value = false;
+                                else
+                                  controller.showCommentButton.value = true;
                               },
-                              reactions: example.reactions,
-                              initialReaction: example.defaultInitialReaction,
-                              selectedReaction: example.reactions[0],
+                              decoration: const InputDecoration.collapsed(
+                                hintText: 'Hãy viết gì đó ...',
+                              ),
+                              focusNode: controller.commentFocusNode,
+                              maxLines: 7,
+                              minLines: 1,
+                              style: TextStyle(fontSize: 14),
                             ),
                           ),
+                          controller.showCommentButton.value
+                              ? InkWell(
+                                  onTap: () {
+                                    controller.commentFocusNode.unfocus();
+                                    controller.commentController.clear();
+                                    controller.showCommentButton.value = false;
+                                  },
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: Colors.grey,
+                                  ),
+                                )
+                              : SizedBox(),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              print('123');
+                            },
+                            child: const Icon(
+                              Icons.tag_faces_outlined,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  controller.showCommentButton.value
+                      ? IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.send_outlined,
+                            color: Colors.blue,
+                          ),
+                        )
+                      : SizedBox(
+                          width: 14,
                         ),
-                        InkWell(
-                          onTap: () => {},
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.message,
-                                size: 20,
-                                color: Colors.grey[400],
-                              ),
-                              const SizedBox(width: 5),
-                              const Text(
-                                'Bình luận',
-                              ),
-                            ],
+                ],
+              ),
+            ),
+          ),
+        ),
+        body: ListView(
+          shrinkWrap: true,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Text(controller.post.value?.content ?? ''),
+            ),
+            Column(
+              children: controller.images.value.map((image) {
+                return Column(
+                  children: [
+                    Stack(
+                      children: [
+                        Hero(
+                          tag: image.url,
+                          child: GestureDetector(
+                            child: CachedNetworkImage(
+                              imageUrl: image.url,
+                              width: MediaQuery.of(context).size.width,
+                              fit: BoxFit.fitHeight,
+                            ),
+                            onTap: () => controller.toPostCompact(),
+                          ),
+                        ),
+                        Positioned(
+                          top: 10,
+                          right: 10,
+                          child: Container(
+                            height: 40,
+                            width: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            child: IconButton(
+                              icon: image.type == 'image'
+                                  ? const Icon(
+                                      Icons.favorite,
+                                      color: Colors.red,
+                                    )
+                                  : const Icon(Icons.favorite_border_outlined),
+                              onPressed: () {
+                                image.type = 'image2';
+                              },
+                            ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  const Divider(),
-                ],
-              );
-            }).toList(),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 15),
-            // child: ReactionBuilder.buildLikeGroup(likeGroup, totalLike),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
-              children: [
-                controller.post.value!.commentsCount == 0
-                    ? const Text('Bài viết chưa có bình luận!')
-                    : Text(
-                        '${controller.post.value!.commentsCount} bình luận',
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                    SizedBox(
+                      height: 10,
+                    ),
+                  ],
+                );
+              }).toList(),
+            ),
+            ReactionBuilder.buildLikeGroup(
+              controller.post.value!.likeGroup,
+              controller.post.value!.likesCount,
+            ),
+            const Divider(
+              height: 1,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * .2,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: ReactionButtonToggle<String>(
+                        onReactionChanged: (String? value, bool isChecked) {},
+                        reactions: example.reactions,
+                        initialReaction: example.defaultInitialReaction,
+                        selectedReaction: example.reactions[1],
+                        isChecked: false,
                       ),
-              ],
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () => {},
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Container(
+                        color: Colors.transparent,
+                        child: Row(
+                          children: <Widget>[
+                            Image.asset('assets/icons/comment.png', height: 20),
+                            const SizedBox(width: 5),
+                            const Text('Bình luận'),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          duration: Duration(seconds: 2),
+                          content: Text(
+                            'Share image',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Container(
+                        color: Colors.transparent,
+                        child: Row(
+                          children: <Widget>[
+                            Image.asset('assets/icons/share.png', height: 20),
+                            const SizedBox(width: 5),
+                            const Text('chia sẻ'),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
-              children: const [
-                Text('Bài viết chưa có lượt chia sẻ nào!'),
-              ],
+            const Divider(
+              height: 1,
             ),
-          ),
-          const Divider(),
-          _buildListComment(context),
-          const SizedBox(height: 30),
-        ],
+            Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              // child: ReactionBuilder.buildLikeGroup(likeGroup, totalLike),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                children: [
+                  controller.post.value!.commentsCount == 0
+                      ? const Text('Bài viết chưa có bình luận!')
+                      : Text(
+                          '${controller.post.value!.commentsCount} bình luận',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                ],
+              ),
+            ),
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                children: const [
+                  Text('Bài viết chưa có lượt chia sẻ nào!'),
+                ],
+              ),
+            ),
+            const Divider(),
+            _buildListComment(context),
+            const SizedBox(height: 30),
+          ],
+        ),
       ),
     );
   }

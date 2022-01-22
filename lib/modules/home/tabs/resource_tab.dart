@@ -30,9 +30,9 @@ class _ResourceTabState extends State<ResourceTab> {
   String content = '';
   String privacy = '1';
   List images = [];
-  List<XFile>? _imageFileList;
+  List<XFile> _imageFileList = [];
   set _imageFile(XFile? value) {
-    _imageFileList = value == null ? null : [value];
+    _imageFileList = value == null ? [] : [value];
   }
 
   dynamic _pickImageError;
@@ -75,16 +75,16 @@ class _ResourceTabState extends State<ResourceTab> {
       setState(() {
         _isLoading = true;
       });
-      final id = await controller.createPost(content: content);
-      if (_imageFileList != null) {
-        for (final file in _imageFileList!) {
-          await ApiProvider.uploadFile(
+      final List<int> listMedia = [];
+      if (_imageFileList.length > 0) {
+        for (final file in _imageFileList) {
+          int media = await ApiProvider.uploadFile(
             file: file,
-            objectId: id,
-            objectType: 'post',
           );
+          listMedia.add(media);
         }
       }
+      await controller.createPost(content: content, media: listMedia);
       _toastSuccess('Đăng bài viết thành công!');
     } catch (e) {
       print(e);
@@ -123,6 +123,9 @@ class _ResourceTabState extends State<ResourceTab> {
     if (_controller != null) {
       await _controller!.setVolume(0.0);
     }
+    setState(() {
+      _pickImageError = null;
+    });
     if (isVideo) {
       final XFile? file = await _picker.pickVideo(
           source: source, maxDuration: const Duration(seconds: 10));
@@ -131,7 +134,7 @@ class _ResourceTabState extends State<ResourceTab> {
       try {
         final pickedFileList = await _picker.pickMultiImage();
         setState(() {
-          _imageFileList = pickedFileList;
+          _imageFileList.addAll(pickedFileList ?? []);
         });
       } catch (e) {
         setState(() {
@@ -143,9 +146,10 @@ class _ResourceTabState extends State<ResourceTab> {
         final pickedFile = await _picker.pickImage(
           source: source,
         );
-        setState(() {
-          _imageFile = pickedFile;
-        });
+        if (pickedFile != null)
+          setState(() {
+            _imageFileList.add(pickedFile);
+          });
       } catch (e) {
         setState(() {
           _pickImageError = e;
@@ -202,25 +206,58 @@ class _ResourceTabState extends State<ResourceTab> {
     if (retrieveError != null) {
       return retrieveError;
     }
-    if (_imageFileList != null) {
-      return Column(children: [
-        ..._imageFileList!.map(
-          (image) => InkWell(
-            onTap: () => _showPreviewImageOrVideo(
-              context: context,
-              file: image,
-            ),
-            child: kIsWeb
-                ? Image.network(image.path)
-                : Image.file(File(image.path)),
-          ),
-        ),
-      ]);
-    } else if (_pickImageError != null) {
+    if (_pickImageError != null) {
       return Text(
         'Chọn hình ảnh bị lỗi: $_pickImageError, Hãy thử chọn ảnh khác! ',
         textAlign: TextAlign.center,
       );
+    } else if (_imageFileList.length > 0) {
+      final List<Widget> listImages = <Widget>[];
+      for (var i = 0; i < _imageFileList.length; i++) {
+        final XFile image = _imageFileList[i];
+        listImages.add(
+          Stack(
+            children: [
+              InkWell(
+                onTap: () => _showPreviewImageOrVideo(
+                  context: context,
+                  file: image,
+                ),
+                child: kIsWeb
+                    ? Image.network(image.path)
+                    : Image.file(
+                        File(image.path),
+                      ),
+              ),
+              Positioned(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: Colors.black87,
+                  ),
+                  height: 30,
+                  width: 30,
+                  child: IconButton(
+                    iconSize: 16,
+                    icon: Icon(
+                      Icons.close,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _imageFileList.removeAt(i);
+                      });
+                    },
+                  ),
+                ),
+                top: 10,
+                right: 10,
+              ),
+            ],
+          ),
+        );
+      }
+      return Column(children: listImages);
     } else {
       return const SizedBox();
     }
@@ -247,7 +284,7 @@ class _ResourceTabState extends State<ResourceTab> {
         isVideo = false;
         setState(() {
           _imageFile = response.file;
-          _imageFileList = response.files;
+          _imageFileList.addAll(response.files ?? []);
         });
       }
     } else {
@@ -285,6 +322,7 @@ class _ResourceTabState extends State<ResourceTab> {
                     height: 16,
                     child: CircularProgressIndicator(
                       strokeWidth: 1.5,
+                      color: Colors.blue,
                     ),
                   )
                 : Text('Đăng'),
@@ -582,104 +620,6 @@ class _ResourceTabState extends State<ResourceTab> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  _showSelectPrivacyDialog(BuildContext context) {
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: false,
-      transitionDuration: const Duration(milliseconds: 200),
-      pageBuilder: (_, __, ___) {
-        return Scaffold(
-          appBar: AppBar(
-            toolbarHeight: 40,
-            leading: IconButton(
-              icon: Icon(
-                Icons.close,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            title: Text('Đối tượng của bài viết'),
-          ),
-          body: Column(
-            children: [
-              Flexible(
-                child: ListView(
-                  padding: const EdgeInsets.all(8),
-                  children: [
-                    Text(
-                      'Ai có thể xem bài viết này?',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      'Bài viết của bạn sẽ hiển thị trên Bảng tin, trang cá nhân và kết quả tìm kiếm',
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(text: 'Đối tượng mặc định của bạn đang là '),
-                          TextSpan(
-                            text: 'Công khai.',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(
-                            text: 'Tuy nhiên, bạn có thể chọn đối tượng khác.',
-                          ),
-                        ],
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    Text(
-                      'Chọn đối tượng:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Radio(
-                      value: '1',
-                      groupValue: privacy,
-                      onChanged: (String? value) {
-                        setState(() {
-                          privacy = value!;
-                        });
-                      },
-                    ),
-                    Radio(
-                      value: '2',
-                      groupValue: privacy,
-                      onChanged: (String? value) {
-                        setState(() {
-                          privacy = value!;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                height: 120,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                  ),
-                  color: Colors.white,
-                  boxShadow: [],
                 ),
               ),
             ],

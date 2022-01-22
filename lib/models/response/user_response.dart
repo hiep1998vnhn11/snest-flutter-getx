@@ -34,14 +34,14 @@ class CurrentUser {
 
   factory CurrentUser.fromJson(Map<String, dynamic> json) => CurrentUser(
         id: json["id"],
-        email: json["email"],
-        firstName: json["first_name"],
-        lastName: json["last_name"],
+        email: json["email"] ?? null,
+        firstName: json["first_name"] ?? null,
+        lastName: json["last_name"] ?? null,
         avatar: json["profile_photo_path"],
         onlineStatus: OnlineStatus.fromJson(json["online_status"]),
         fullname: json["full_name"],
-        phoneNumber: json["phone_number"],
-        slug: json["slug"],
+        phoneNumber: json["phone_number"] ?? null,
+        slug: json["slug"] ?? null,
         url: json["url"],
         userInfo: UserInfo.fromJson(json["info"]),
       );
@@ -105,7 +105,7 @@ class UserInfo {
         id: json["id"],
         userId: json["user_id"],
         gender: json['gender'],
-        cover: json['cover'],
+        cover: json['profile_background_path'],
         birthday: json['birthday'],
         liveAt: json['live_at'],
         from: json['from'],
@@ -115,14 +115,15 @@ class UserInfo {
         locale: json['locale'],
         showLiveAt: json['show_live_at'],
         showFrom: json['show_from'],
-        jobs: json['jobs'],
-        educates: json['educates'],
+        jobs: json['jobs'] ?? [],
+        educates: json['educates'] ?? [],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "user_id": userId,
         "gender": gender,
+        'profile_background_path': cover,
       };
 }
 
@@ -173,5 +174,65 @@ class CompressUser {
         "online_status": onlineStatus.toJson(),
         "full_name": fullname,
         "profile_photo_path": avatar,
+      };
+}
+
+class User {
+  User({
+    required this.id,
+    this.avatar,
+    required this.onlineStatus,
+    required this.fullname,
+    required this.url,
+    this.friendsCount = 0,
+    this.followersCount = 0,
+    this.followingCount = 0,
+    this.friend,
+    this.follow,
+    required this.userInfo,
+  });
+
+  int id;
+  String? avatar;
+  String fullname;
+  String url;
+  OnlineStatus onlineStatus;
+  int friendsCount;
+  int followersCount;
+  int followingCount;
+  List? friend;
+  List? follow;
+  UserInfo userInfo;
+
+  factory User.fromRawJson(String str) => User.fromJson(json.decode(str));
+
+  String toRawJson() => json.encode(toJson());
+
+  factory User.fromJson(Map<String, dynamic> json) => User(
+        id: json["id"],
+        avatar: json["profile_photo_path"],
+        onlineStatus: OnlineStatus.fromJson(json["online_status"]),
+        fullname: json["full_name"],
+        url: json["url"],
+        friendsCount: json["friends_count"] ?? 0,
+        followersCount: json["follows_count"] ?? 0,
+        friend: json['friend'] ?? null,
+        follow: json['follow'] ?? null,
+        followingCount: json["followeds_count"] ?? 0,
+        userInfo: UserInfo.fromJson(json["info"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "avatar": avatar,
+        "online_status": onlineStatus.toJson(),
+        "fullname": fullname,
+        "url": url,
+        "friends_count": friendsCount,
+        "follows_count": followersCount,
+        "followeds_count": followingCount,
+        "friend": friend,
+        "follow": follow,
+        "info": userInfo.toJson(),
       };
 }

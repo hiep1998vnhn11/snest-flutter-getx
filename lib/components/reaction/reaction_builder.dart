@@ -7,7 +7,7 @@ class ReactionBuilder {
     return likeGroup.isEmpty
         ? const SizedBox()
         : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Row(
               children: [
                 ...likeGroup.map((like) {

@@ -10,4 +10,7 @@ abstract class Routes {
 
   static const POST_PRIVACY = '/post_privacy';
   static const POST_DETAIL = '/post';
+  static const POST_DETAIL_COMPACT = '/post_compact';
+
+  static const PROFILE = '/profile';
 }

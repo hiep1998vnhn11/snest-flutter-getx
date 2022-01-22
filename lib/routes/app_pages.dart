@@ -1,6 +1,8 @@
 import 'package:snest/modules/auth/auth.dart';
 import 'package:snest/modules/home/home.dart';
+import 'package:snest/modules/profile/profile.dart';
 import 'package:snest/modules/home/tabs/post/post_detail.dart';
+import 'package:snest/modules/home/tabs/post/post_detail_compact.dart';
 import 'package:snest/modules/me/cards/cards_screen.dart';
 import 'package:snest/modules/modules.dart';
 import 'package:get/get.dart';
@@ -34,6 +36,15 @@ class AppPages {
         GetPage(
           name: '${Routes.POST_DETAIL}/:post_uid',
           page: () => PostScreen(),
+        ),
+        GetPage(
+          name: '${Routes.POST_DETAIL_COMPACT}/:post_uid',
+          page: () => PostDetailCompactScreen(),
+        ),
+        GetPage(
+          name: '${Routes.PROFILE}/:user_url',
+          page: () => ProfileScreen(),
+          binding: ProfileBinding(),
         ),
       ],
     ),

@@ -70,7 +70,7 @@ class PostItem extends StatelessWidget {
               padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
               child: Text(post.content ?? ''),
             ),
-            PostMediaGrid(media: post.media),
+            PostMediaGrid(media: post.media, onTap: onDetail),
             ReactionBuilder.buildLikeGroup(post.likeGroup, post.likesCount),
             const Divider(
               height: 1,

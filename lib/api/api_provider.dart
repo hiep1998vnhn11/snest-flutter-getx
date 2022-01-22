@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:snest/api/base_provider.dart';
 import 'package:snest/models/models.dart';
 import 'package:get/get.dart';
@@ -5,6 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'api_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:path_provider/path_provider.dart';
 
 class ApiProvider extends BaseProvider {
   Future<Response> login(String path, LoginRequest data) {
@@ -31,10 +35,10 @@ class ApiProvider extends BaseProvider {
     return post('user/post', request.toJson());
   }
 
-  static Future<void> uploadFile({
+  static Future<int> uploadFile({
     required XFile file,
-    required int objectId,
-    required String objectType,
+    int? objectId,
+    String? objectType,
   }) async {
     final request = http.MultipartRequest(
       'POST',
@@ -43,8 +47,26 @@ class ApiProvider extends BaseProvider {
     final token = (await SharedPreferences.getInstance()).getString('token');
     request.headers['Authorization'] = 'Bearer $token';
     request.files.add(await http.MultipartFile.fromPath('file', file.path));
-    request.fields['object_id'] = objectId.toString();
-    request.fields['object_type'] = objectType;
-    await request.send();
+    if (objectId != null) request.fields['object_id'] = objectId.toString();
+    if (objectType != null) request.fields['object_type'] = objectType;
+    final http.StreamedResponse res = await request.send();
+    final response = await res.stream.bytesToString();
+    final Map<String, dynamic> data = json.decode(response);
+    return data['data'];
+  }
+
+  static Future<bool> downloadImage(String url) async {
+    final splited = url.split('/');
+    final fileName = splited.last;
+    final documentDirectory = await getApplicationDocumentsDirectory();
+    final firstPath = documentDirectory.path + '/images';
+    final filePath =
+        '$firstPath/${DateTime.now().microsecondsSinceEpoch}_$fileName';
+    await Directory(firstPath).create(recursive: true);
+
+    final response = await http.get(Uri.parse(url));
+    File file = File(filePath);
+    file.writeAsBytesSync(response.bodyBytes);
+    return true;
   }
 }

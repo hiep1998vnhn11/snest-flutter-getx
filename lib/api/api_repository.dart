@@ -47,6 +47,19 @@ class ApiRepository {
     return [];
   }
 
+  Future<Post?> getPost(String pid) async {
+    final res = await apiProvider.get('user/post/$pid');
+    if (res.body['status'] == 0) {
+      return Post.fromJson(res.body['data']);
+    }
+    return null;
+  }
+
+  Future<User> getUser(String url) async {
+    final res = await apiProvider.get('user/$url');
+    return User.fromJson(res.body['data']);
+  }
+
   Future<List<Comment>> getComments(
     PaginationRequest request,
     String postUid,
