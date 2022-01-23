@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class AppAvatar extends StatelessWidget {
@@ -41,9 +42,15 @@ class AppAvatar extends StatelessWidget {
                   radius: size - borderWidth,
                   backgroundImage: AssetImage('assets/icons/wow.png'),
                 )
-              : CircleAvatar(
-                  radius: size - borderWidth,
-                  backgroundImage: NetworkImage(imageUrl!),
+              : ClipRRect(
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl!,
+                    height: size,
+                    width: size,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, __, ___) => Icon(Icons.error),
+                  ),
+                  borderRadius: BorderRadius.circular(size / 2),
                 ),
           showOnline
               ? Positioned(

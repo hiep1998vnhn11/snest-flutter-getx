@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:snest/components/app_avatar.dart';
 import 'package:snest/modules/home/home_controller.dart';
 import 'package:snest/modules/splash/splash_controller.dart';
 import 'package:image_picker/image_picker.dart';
@@ -345,19 +346,12 @@ class _ResourceTabState extends State<ResourceTab> {
                         Row(
                           children: [
                             Obx(
-                              () => authController.currentUser.value?.avatar ==
-                                      null
-                                  ? const CircleAvatar(
-                                      backgroundImage: AssetImage(
-                                          'assets.images/default.png'),
-                                    )
-                                  : CircleAvatar(
-                                      radius: 20,
-                                      backgroundImage: NetworkImage(
-                                        authController
-                                            .currentUser.value!.avatar!,
-                                      ),
-                                    ),
+                              () => AppAvatar(
+                                size: 40,
+                                imageUrl:
+                                    authController.currentUser.value?.avatar,
+                                isOnline: true,
+                              ),
                             ),
                             Padding(
                               padding: const EdgeInsets.only(left: 10),

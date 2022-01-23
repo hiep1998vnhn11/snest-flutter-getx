@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:snest/components/app_avatar.dart';
 import 'package:snest/modules/home/home.dart';
 import 'package:snest/modules/modules.dart';
 import 'package:get/get.dart';
@@ -50,30 +51,13 @@ class MeTab extends GetView<HomeController> {
                       children: [
                         Row(
                           children: [
-                            Container(
-                              width: 50,
-                              child: authController.currentUser.value?.avatar !=
-                                      null
-                                  ? CircleAvatar(
-                                      radius: 25,
-                                      backgroundImage: NetworkImage(
-                                        authController
-                                            .currentUser.value!.avatar!,
-                                      ),
-                                    )
-                                  : const CircleAvatar(
-                                      radius: 25,
-                                      backgroundImage: AssetImage(
-                                        'assets/images/facebook.png',
-                                      ),
-                                    ),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.grey.shade300,
-                                  width: 1.0,
-                                ),
-                              ),
+                            AppAvatar(
+                              size: 50,
+                              imageUrl:
+                                  authController.currentUser.value?.avatar,
+                              isOnline: true,
+                              borderWidth: 1,
+                              borderColor: Colors.black.withOpacity(0.8),
                             ),
                             Padding(
                               padding: const EdgeInsets.only(left: 8),

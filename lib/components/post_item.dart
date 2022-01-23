@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:snest/modules/home/home_controller.dart';
 // import 'package:snest/screens/post/post.dart';
-import 'package:snest/components/grid_image.dart';
 import 'package:flutter_reaction_button/flutter_reaction_button.dart';
 import 'package:snest/components/reaction/data/example_data.dart' as example;
 import 'package:snest/components/reaction/reaction_builder.dart';
 import 'package:snest/models/models.dart' show Post;
 import 'post_media_grid.dart';
+import 'package:snest/components/app_avatar.dart';
 
 class PostItem extends StatelessWidget {
   final Post post;
@@ -35,15 +35,11 @@ class PostItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             ListTile(
-              leading: post.userAvatar != null
-                  ? CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        post.userAvatar!,
-                      ),
-                    )
-                  : const CircleAvatar(
-                      backgroundImage: AssetImage('assets/images/default.png'),
-                    ),
+              leading: AppAvatar(
+                imageUrl: post.userAvatar,
+                showOnline: false,
+                size: 40,
+              ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 10,
               ),

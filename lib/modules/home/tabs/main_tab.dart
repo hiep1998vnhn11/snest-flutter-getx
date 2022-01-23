@@ -334,18 +334,15 @@ class MainTab extends GetView<HomeController> {
                       children: [
                         Row(
                           children: [
-                            authController.currentUser.value?.avatar == null
-                                ? const CircleAvatar(
-                                    backgroundImage: AssetImage(
-                                      'assets.images/default.png',
-                                    ),
-                                  )
-                                : CircleAvatar(
-                                    radius: 20,
-                                    backgroundImage: NetworkImage(
-                                      authController.currentUser.value!.avatar!,
-                                    ),
-                                  ),
+                            AppAvatar(
+                              imageUrl:
+                                  authController.currentUser.value?.avatar,
+                              size: 40,
+                              borderWidth: 1,
+                              borderColor: Colors.grey[0],
+                              isOnline: true,
+                              onlineDotSize: 6,
+                            ),
                             Padding(
                               padding: const EdgeInsets.only(left: 10),
                               child: Column(
