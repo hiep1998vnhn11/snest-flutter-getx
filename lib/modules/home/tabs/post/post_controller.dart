@@ -55,6 +55,41 @@ class PostController extends GetxController {
     }
   }
 
+  Future<void> handleLike(int likeStatus) async {
+    if (post.value == null) return;
+    try {
+      final likeStatusBefore = post.value!.likeStatus;
+      post.value!.likeStatus = likeStatus;
+      if (likeStatus > 0 && likeStatusBefore == 0) post.value!.likesCount++;
+      if (likeStatus == 0 && likeStatusBefore > 0) post.value!.likesCount--;
+      final indexLikeStatus =
+          post.value!.likeGroup.indexWhere((like) => like.status == likeStatus);
+      final indexStatusBefore = post.value!.likeGroup
+          .indexWhere((like) => like.status == likeStatusBefore);
+      if (indexStatusBefore > -1) {
+        post.value!.likeGroup[indexStatusBefore].counter--;
+        if (post.value!.likeGroup[indexStatusBefore].counter == 0)
+          post.value!.likeGroup.removeAt(indexStatusBefore);
+      }
+      if (indexLikeStatus == -1 && likeStatus > 0) {
+        if (post.value!.likeGroup.length < 3)
+          post.value!.likeGroup.add(
+            LikeGroup(status: likeStatus, counter: 1),
+          );
+      }
+      if (indexLikeStatus > -1) {
+        post.value!.likeGroup[indexLikeStatus].counter++;
+      }
+      apiRepository.handleLikePost(
+        pid: post.value!.uid,
+        status: likeStatus,
+      );
+      post.refresh();
+    } catch (err) {
+      print(err);
+    }
+  }
+
   Future<bool> fetchComments({bool isRefresh = false}) async {
     if (post.value?.uid == null) return false;
     try {

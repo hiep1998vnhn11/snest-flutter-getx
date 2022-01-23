@@ -2,23 +2,21 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:snest/models/response/user_response.dart';
-import 'package:snest/modules/home/tabs/post/post_controller.dart';
+// import 'package:snest/modules/home/tabs/post/post_controller.dart';
 import 'profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:snest/modules/splash/splash.dart';
 import 'package:snest/modules/home/home.dart';
-import 'package:snest/routes/routes.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:snest/shared/shared.dart';
 import 'package:snest/api/api.dart';
 import 'image_viewer.dart';
 import 'package:snest/models/models.dart';
 import 'widget/friend_list.dart';
 import 'package:snest/components/post_item.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:snest/models/request/posts_request.dart' show PostPrivacyValue;
 import 'package:snest/modules/home/tabs/post/post_privacy.dart';
 import 'dart:async';
+import 'package:snest/components/shimmer/post_item_shimmer.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -185,41 +183,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
         elevation: 0,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          _buildNavigationBarItem(
-            "Trang chủ",
-            "icon_home.svg",
-          ),
-          _buildNavigationBarItem(
-            "Tin nhắn",
-            "icon_inbox.svg",
-          ),
-          _buildNavigationBarItem(
-            "Tạo",
-            "icon_resource.svg",
-          ),
-          _buildNavigationBarItem(
-            "Thông báo",
-            "icon_discover.svg",
-          ),
-          _buildNavigationBarItem(
-            "Menu",
-            "icon_me.svg",
-          )
-        ],
-        type: BottomNavigationBarType.fixed,
-        unselectedItemColor: ColorConstants.black,
-        selectedItemColor: ColorConstants.black,
-        selectedLabelStyle: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-        ),
-        onTap: (index) {
-          Get.toNamed(Routes.HOME);
-          homeController.switchTab(index);
-        },
-      ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   items: [
+      //     _buildNavigationBarItem(
+      //       "Trang chủ",
+      //       "icon_home.svg",
+      //     ),
+      //     _buildNavigationBarItem(
+      //       "Tin nhắn",
+      //       "icon_inbox.svg",
+      //     ),
+      //     _buildNavigationBarItem(
+      //       "Tạo",
+      //       "icon_resource.svg",
+      //     ),
+      //     _buildNavigationBarItem(
+      //       "Thông báo",
+      //       "icon_discover.svg",
+      //     ),
+      //     _buildNavigationBarItem(
+      //       "Menu",
+      //       "icon_me.svg",
+      //     )
+      //   ],
+      //   type: BottomNavigationBarType.fixed,
+      //   unselectedItemColor: ColorConstants.black,
+      //   selectedItemColor: ColorConstants.black,
+      //   selectedLabelStyle: TextStyle(
+      //     fontSize: 14,
+      //     fontWeight: FontWeight.bold,
+      //   ),
+      //   onTap: (index) {
+      //     Get.toNamed(Routes.HOME);
+      //     homeController.switchTab(index);
+      //   },
+      // ),
       body: SmartRefresher(
         enablePullDown: false,
         enablePullUp: true,
@@ -369,6 +367,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               _buildListPost(),
+              loadingPost ? PostItemShimmer() : SizedBox(),
             ],
           ),
         ),

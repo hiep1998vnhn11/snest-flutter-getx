@@ -12,11 +12,11 @@ class PostScreen extends GetView<PostController> {
   final SplashController authController = Get.find();
   @override
   Widget build(BuildContext context) {
-    print('123');
     return Obx(
       () => Scaffold(
         appBar: AppBar(
           titleSpacing: 0,
+          elevation: 0,
           title: ListTile(
             dense: true,
             leading: const CircleAvatar(
@@ -134,165 +134,175 @@ class PostScreen extends GetView<PostController> {
             ),
           ),
         ),
-        body: ListView(
-          shrinkWrap: true,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Text(controller.post.value?.content ?? ''),
-            ),
-            Column(
-              children: controller.images.value.map((image) {
-                return Column(
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Text(controller.post.value?.content ?? ''),
+              ),
+              Column(
+                children: controller.images.value.map((image) {
+                  return Column(
+                    children: [
+                      Stack(
+                        children: [
+                          Hero(
+                            tag: image.url,
+                            child: GestureDetector(
+                              child: CachedNetworkImage(
+                                imageUrl: image.url,
+                                width: MediaQuery.of(context).size.width,
+                                fit: BoxFit.fitHeight,
+                              ),
+                              onTap: () => controller.toPostCompact(),
+                            ),
+                          ),
+                          Positioned(
+                            top: 10,
+                            right: 10,
+                            child: Container(
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              child: IconButton(
+                                icon: image.type == 'image'
+                                    ? const Icon(
+                                        Icons.favorite,
+                                        color: Colors.red,
+                                      )
+                                    : const Icon(
+                                        Icons.favorite_border_outlined),
+                                onPressed: () {
+                                  image.type = 'image2';
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                    ],
+                  );
+                }).toList(),
+              ),
+              ReactionBuilder.buildLikeGroup(
+                controller.post.value!.likeGroup,
+                controller.post.value!.likesCount,
+              ),
+              const Divider(
+                height: 1,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Stack(
-                      children: [
-                        Hero(
-                          tag: image.url,
-                          child: GestureDetector(
-                            child: CachedNetworkImage(
-                              imageUrl: image.url,
-                              width: MediaQuery.of(context).size.width,
-                              fit: BoxFit.fitHeight,
-                            ),
-                            onTap: () => controller.toPostCompact(),
-                          ),
-                        ),
-                        Positioned(
-                          top: 10,
-                          right: 10,
-                          child: Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.5),
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            child: IconButton(
-                              icon: image.type == 'image'
-                                  ? const Icon(
-                                      Icons.favorite,
-                                      color: Colors.red,
-                                    )
-                                  : const Icon(Icons.favorite_border_outlined),
-                              onPressed: () {
-                                image.type = 'image2';
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                     SizedBox(
-                      height: 10,
-                    ),
-                  ],
-                );
-              }).toList(),
-            ),
-            ReactionBuilder.buildLikeGroup(
-              controller.post.value!.likeGroup,
-              controller.post.value!.likesCount,
-            ),
-            const Divider(
-              height: 1,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * .2,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: ReactionButtonToggle<String>(
-                        onReactionChanged: (String? value, bool isChecked) {},
-                        reactions: example.reactions,
-                        initialReaction: example.defaultInitialReaction,
-                        selectedReaction: example.reactions[1],
-                        isChecked: false,
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () => {},
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Container(
-                        color: Colors.transparent,
-                        child: Row(
-                          children: <Widget>[
-                            Image.asset('assets/icons/comment.png', height: 20),
-                            const SizedBox(width: 5),
-                            const Text('Bình luận'),
-                          ],
+                      width: MediaQuery.of(context).size.width * .2,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: ReactionButtonToggle<String>(
+                          onReactionChanged: (String? value, bool isChecked) =>
+                              controller.handleLike(
+                            value == null ? 0 : int.parse(value),
+                          ),
+                          reactions: example.reactions,
+                          initialReaction: example.defaultInitialReaction,
+                          selectedReaction: example.reactions[
+                              controller.post.value!.likeStatus == 0
+                                  ? 0
+                                  : controller.post.value!.likeStatus - 1],
+                          isChecked: controller.post.value!.likeStatus > 0,
                         ),
                       ),
                     ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          duration: Duration(seconds: 2),
-                          content: Text(
-                            'Share image',
-                            style: TextStyle(color: Colors.white),
+                    InkWell(
+                      onTap: () => {},
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Container(
+                          color: Colors.transparent,
+                          child: Row(
+                            children: <Widget>[
+                              Image.asset('assets/icons/comment.png',
+                                  height: 20),
+                              const SizedBox(width: 5),
+                              const Text('Bình luận'),
+                            ],
                           ),
                         ),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Container(
-                        color: Colors.transparent,
-                        child: Row(
-                          children: <Widget>[
-                            Image.asset('assets/icons/share.png', height: 20),
-                            const SizedBox(width: 5),
-                            const Text('chia sẻ'),
-                          ],
-                        ),
                       ),
                     ),
-                  )
-                ],
-              ),
-            ),
-            const Divider(
-              height: 1,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 15),
-              // child: ReactionBuilder.buildLikeGroup(likeGroup, totalLike),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                children: [
-                  controller.post.value!.commentsCount == 0
-                      ? const Text('Bài viết chưa có bình luận!')
-                      : Text(
-                          '${controller.post.value!.commentsCount} bình luận',
-                          style: const TextStyle(fontWeight: FontWeight.w600),
+                    InkWell(
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            duration: Duration(seconds: 2),
+                            content: Text(
+                              'Share image',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Container(
+                          color: Colors.transparent,
+                          child: Row(
+                            children: <Widget>[
+                              Image.asset('assets/icons/share.png', height: 20),
+                              const SizedBox(width: 5),
+                              const Text('chia sẻ'),
+                            ],
+                          ),
                         ),
-                ],
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-            const Divider(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                children: const [
-                  Text('Bài viết chưa có lượt chia sẻ nào!'),
-                ],
+              const Divider(
+                height: 1,
               ),
-            ),
-            const Divider(),
-            _buildListComment(context),
-            const SizedBox(height: 30),
-          ],
+              Padding(
+                padding: const EdgeInsets.only(bottom: 15),
+                // child: ReactionBuilder.buildLikeGroup(likeGroup, totalLike),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  children: [
+                    controller.post.value!.commentsCount == 0
+                        ? const Text('Bài viết chưa có bình luận!')
+                        : Text(
+                            '${controller.post.value!.commentsCount} bình luận',
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                  ],
+                ),
+              ),
+              const Divider(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  children: const [
+                    Text('Bài viết chưa có lượt chia sẻ nào!'),
+                  ],
+                ),
+              ),
+              const Divider(),
+              _buildListComment(context),
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
       ),
     );
