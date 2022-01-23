@@ -3,22 +3,23 @@ import 'package:snest/util/format/number.dart';
 import 'package:snest/models/response/posts_response.dart';
 
 class ReactionBuilder {
-  static Widget buildLikeGroup(List likeGroup, int totalLike) {
-    return likeGroup.isEmpty
+  static Widget buildLikeGroup(List<LikeGroup> likeGroup, int totalLike) {
+    return likeGroup.isEmpty || totalLike <= 0
         ? const SizedBox()
         : Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Row(
               children: [
-                ...likeGroup.map((like) {
-                  return buildLikeItem(like);
-                }).toList(),
-                Padding(
-                  padding: const EdgeInsets.only(left: 4),
-                  child: Text(
-                    UtilNumberFormat.formatNumber(totalLike),
-                    style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.w500),
+                for (int i = 0; i < likeGroup.length; i++)
+                  buildLikeItem(likeGroup[i]),
+                SizedBox(
+                  width: 4,
+                ),
+                Text(
+                  UtilNumberFormat.formatNumber(totalLike),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -27,51 +28,29 @@ class ReactionBuilder {
   }
 
   static Widget buildLikeItem(LikeGroup like) {
-    if (like.status == 1) {
-      return const CircleAvatar(
-        backgroundImage: AssetImage('assets/reactions/like.png'),
-        radius: 9,
-      );
-    }
-    if (like.status == 2) {
-      return const CircleAvatar(
-        backgroundImage: AssetImage('assets/reactions/love.png'),
-        radius: 9,
-      );
-    }
-    if (like.status == 3) {
-      return const CircleAvatar(
-        backgroundImage: AssetImage('assets/reactions/care.png'),
-        radius: 9,
-      );
-    }
-    if (like.status == 4) {
-      return const CircleAvatar(
-        backgroundImage: AssetImage('assets/reactions/haha.png'),
-        radius: 9,
-      );
-    }
-    if (like.status == 5) {
-      return const CircleAvatar(
-        backgroundImage: AssetImage('assets/reactions/wow.png'),
-        radius: 9,
-      );
-    }
-    if (like.status == 6) {
-      return const CircleAvatar(
-        backgroundImage: AssetImage('assets/reactions/sad.png'),
-        radius: 9,
-      );
-    }
-    if (like.status == 7) {
-      return const CircleAvatar(
-        backgroundImage: AssetImage('assets/reactions/angry.png'),
-        radius: 9,
-      );
-    }
-    return const CircleAvatar(
-      backgroundImage: AssetImage('assets/reactions/like.png'),
-      radius: 9,
+    if (like.counter <= 0) return const SizedBox();
+    String reaction = 'like';
+    if (like.status == 2)
+      reaction = 'love';
+    else if (like.status == 3)
+      reaction = 'care';
+    else if (like.status == 4)
+      reaction = 'haha';
+    else if (like.status == 5)
+      reaction = 'wow';
+    else if (like.status == 6)
+      reaction = 'sad';
+    else if (like.status == 7) reaction = 'angry';
+    return Container(
+      height: 18,
+      width: 18,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        image: DecorationImage(
+          image: AssetImage('assets/reactions/$reaction.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
     );
   }
 

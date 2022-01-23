@@ -257,6 +257,13 @@ class _ResourceTabState extends State<ResourceTab> {
             ],
           ),
         );
+        if (i < _imageFileList.length - 1) {
+          listImages.add(
+            SizedBox(
+              height: 10,
+            ),
+          );
+        }
       }
       return Column(children: listImages);
     } else {
@@ -323,13 +330,13 @@ class _ResourceTabState extends State<ResourceTab> {
                     height: 16,
                     child: CircularProgressIndicator(
                       strokeWidth: 1.5,
-                      color: Colors.blue,
+                      color: Colors.white,
                     ),
                   )
-                : Text('Đăng'),
-            style: TextButton.styleFrom(
-              primary: Colors.blue,
-            ),
+                : Text(
+                    'Đăng',
+                    style: TextStyle(color: Colors.white),
+                  ),
           ),
         ],
       ),

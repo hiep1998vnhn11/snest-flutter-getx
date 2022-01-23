@@ -35,7 +35,7 @@ class Post {
     this.userAvatar,
     this.commentsCount = 0,
     this.likesCount = 0,
-    this.likeStatus,
+    this.likeStatus = 0,
     this.imagesCount = 0,
     required this.uid,
     this.likeGroup = const [],
@@ -50,7 +50,7 @@ class Post {
   String? userAvatar;
   String userUrl;
   int imagesCount;
-  int? likeStatus;
+  int likeStatus;
   int commentsCount;
   int likesCount;
   List<LikeGroup> likeGroup;
@@ -75,7 +75,7 @@ class Post {
       userAvatar: json["user_profile_photo_path"],
       commentsCount: json["comments_count"] ?? 0,
       likesCount: json['likes_count'] ?? 0,
-      likeStatus: json["likeStatus"],
+      likeStatus: json["like_status"] ?? 0,
       imagesCount: json["images_count"] ?? 0,
       media: json["media"] != null
           ? List<PostMedia>.from(
@@ -104,7 +104,7 @@ class Post {
         "user_profile_photo_path": userAvatar,
         "comments_count": commentsCount,
         "likes_count": likesCount,
-        "likeStatus": likeStatus,
+        "like_status": likeStatus,
         "images_count": imagesCount,
         "like_group": List<dynamic>.from(
           likeGroup.map((x) => x.toJson()),

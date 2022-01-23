@@ -43,11 +43,12 @@ class HomeController extends GetxController {
   var posts = Rx<List<Post>>([]);
   var currentPost = Rxn<Post>();
   var isDone = Rx<bool>(false);
+  var loadingPost = Rx<bool>(false);
   var count = Rx<int>(12);
   var postCount = Rx<int>(0);
 
   late MainTab mainTab;
-  late DiscoverTab discoverTab;
+  late NotificationTab notificationTab;
   late ResourceTab resourceTab;
   late InboxTab inboxTab;
   late MeTab meTab;
@@ -56,7 +57,7 @@ class HomeController extends GetxController {
   void onInit() async {
     super.onInit();
     mainTab = MainTab();
-    discoverTab = DiscoverTab();
+    notificationTab = NotificationTab();
     resourceTab = ResourceTab();
     inboxTab = InboxTab();
     meTab = MeTab();
@@ -69,6 +70,7 @@ class HomeController extends GetxController {
     count.value++;
     if (isRefresh == false && isDone.value == true) return;
     try {
+      loadingPost.value = true;
       int offset = 0;
       if (isRefresh) {
         offset = 0;
@@ -86,6 +88,8 @@ class HomeController extends GetxController {
       isDone.value = response.length < 5;
     } catch (e) {
       print(e);
+    } finally {
+      loadingPost.value = false;
     }
   }
 
@@ -171,11 +175,11 @@ class HomeController extends GetxController {
       case MainTabs.home:
         return 0;
       case MainTabs.discover:
-        return 1;
+        return 3;
       case MainTabs.resource:
         return 2;
       case MainTabs.inbox:
-        return 3;
+        return 1;
       case MainTabs.me:
         return 4;
       default:
@@ -187,11 +191,11 @@ class HomeController extends GetxController {
     switch (index) {
       case 0:
         return MainTabs.home;
-      case 1:
+      case 3:
         return MainTabs.discover;
       case 2:
         return MainTabs.resource;
-      case 3:
+      case 1:
         return MainTabs.inbox;
       case 4:
         return MainTabs.me;
@@ -202,6 +206,11 @@ class HomeController extends GetxController {
 
   Future getStory() async {
     stories.value.add('Story ${stories.value.length}');
+  }
+
+  void updatePost(int index, Post post) {
+    posts.value[index] = post;
+    postCount.refresh();
   }
 
   @override

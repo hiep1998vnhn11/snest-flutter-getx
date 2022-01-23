@@ -23,6 +23,14 @@ class ApiRepository {
     }
   }
 
+  Future handleLikePost({required String pid, required int status}) async {
+    await apiProvider.post('user/post/$pid/like', {
+      'status': '$status',
+    }, headers: {
+      'silent': 'true'
+    });
+  }
+
   Future<CurrentUser?> me() async {
     final res = await apiProvider.me();
     if (res.body['status'] == 0) {
@@ -47,6 +55,22 @@ class ApiRepository {
     return [];
   }
 
+  Future<int> getUnseenNotification() async {
+    final res = await apiProvider.get('user/notification/unseen');
+    if (res.body['status'] == 0) {
+      return res.body['data'];
+    }
+    return 0;
+  }
+
+  Future<String?> readNotification(int id) async {
+    final res = await apiProvider.post('user/notification/$id', {});
+    if (res.body['status'] == 0) {
+      return res.body['data'];
+    }
+    return null;
+  }
+
   Future<List<Post>> getUserPosts({
     required PaginationRequest request,
     required String url,
@@ -67,6 +91,15 @@ class ApiRepository {
       return ListFriendResponse.fromJson(res.body['data']);
     }
     return null;
+  }
+
+  Future<List<SnestNotification>> getNotifications(
+      PaginationRequest request) async {
+    final res = await apiProvider.pagination('user/notification', request);
+    if (res.body['status'] == 0) {
+      return ListNotificationResponse.fromJson(res.body['data']).notifications;
+    }
+    return [];
   }
 
   Future<Post?> getPost(String pid) async {

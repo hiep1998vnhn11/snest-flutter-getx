@@ -192,16 +192,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             "icon_home.svg",
           ),
           _buildNavigationBarItem(
-            "Khám phá",
-            "icon_discover.svg",
+            "Tin nhắn",
+            "icon_inbox.svg",
           ),
           _buildNavigationBarItem(
             "Tạo",
             "icon_resource.svg",
           ),
           _buildNavigationBarItem(
-            "Tin nhắn",
-            "icon_inbox.svg",
+            "Thông báo",
+            "icon_discover.svg",
           ),
           _buildNavigationBarItem(
             "Menu",

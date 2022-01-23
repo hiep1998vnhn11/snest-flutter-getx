@@ -1,13 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:snest/models/models.dart';
 import 'package:snest/modules/home/home.dart';
 import 'package:snest/components/app_avatar.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:snest/components/post_item.dart';
 import 'package:snest/modules/modules.dart';
-import 'package:snest/models/request/posts_request.dart' show PostPrivacyValue;
+// import 'package:snest/models/request/posts_request.dart' show PostPrivacyValue;
 import 'post/post_privacy.dart';
+import 'package:snest/components/shimmer/post_item_shimmer.dart';
 
 class MainTab extends GetView<HomeController> {
   final SplashController authController = Get.find();
@@ -34,11 +36,35 @@ class MainTab extends GetView<HomeController> {
       );
       if (index == -1) return;
       var post = controller.posts.value[index];
-      post.content = '123123';
-      print(post.content);
-      controller.posts.value[index] = post;
-      // controller.posts.value[index].content = '123123';
-      // post.content = 'Testtt';
+      final intLikeStatus = likeStatus == null ? 0 : int.parse(likeStatus);
+      final likeStatusBefore = post.likeStatus;
+      post.likeStatus = intLikeStatus;
+      if (intLikeStatus > 0 && likeStatusBefore == 0) post.likesCount++;
+      if (intLikeStatus == 0 && likeStatusBefore > 0) post.likesCount--;
+      final indexLikeStatus =
+          post.likeGroup.indexWhere((like) => like.status == intLikeStatus);
+      final indexStatusBefore =
+          post.likeGroup.indexWhere((like) => like.status == likeStatusBefore);
+      if (indexStatusBefore > -1) {
+        post.likeGroup[indexStatusBefore].counter--;
+        if (post.likeGroup[indexStatusBefore].counter == 0)
+          post.likeGroup.removeAt(indexStatusBefore);
+      }
+      if (indexLikeStatus == -1 && intLikeStatus > 0) {
+        if (post.likeGroup.length < 3)
+          post.likeGroup.add(
+            LikeGroup(status: intLikeStatus, counter: 1),
+          );
+      }
+      if (indexLikeStatus > -1) {
+        post.likeGroup[indexLikeStatus].counter++;
+      }
+      controller.updatePost(index, post);
+
+      controller.apiRepository.handleLikePost(
+        pid: post.uid,
+        status: intLikeStatus,
+      );
     } catch (err) {
       print(err);
     }
@@ -90,6 +116,7 @@ class MainTab extends GetView<HomeController> {
                 color: Colors.grey[300],
               ),
               _buildListPost(),
+              controller.loadingPost.value ? PostItemShimmer() : SizedBox(),
             ],
           ),
           onRefresh: _onRefresh,

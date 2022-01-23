@@ -8,10 +8,21 @@ import 'package:snest/models/response/user_response.dart';
 class SplashController extends GetxController {
   final ApiRepository apiRepository = Get.find();
   var currentUser = Rxn<CurrentUser>();
+  var unSeenNotification = 0.obs;
+
   Future<void> getUserInfo() async {
     try {
       final user = await apiRepository.me();
       currentUser.value = user;
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> getUnSeenNotification() async {
+    try {
+      final number = await apiRepository.getUnseenNotification();
+      unSeenNotification.value = number;
     } catch (e) {
       print(e);
     }
@@ -24,6 +35,7 @@ class SplashController extends GetxController {
     try {
       if (storage.getString(StorageConstants.token) != null) {
         if (currentUser.value == null) await getUserInfo();
+        getUnSeenNotification();
         Get.toNamed(Routes.HOME);
       } else {
         Get.toNamed(Routes.AUTH);

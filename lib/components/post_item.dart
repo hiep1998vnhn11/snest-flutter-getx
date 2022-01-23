@@ -87,35 +87,17 @@ class PostItem extends StatelessWidget {
                         reactions: example.reactions,
                         initialReaction: example.defaultInitialReaction,
                         selectedReaction: example.reactions[
-                            post.likeStatus == null || post.likeStatus == 0
-                                ? 0
-                                : post.likeStatus! - 1],
-                        isChecked:
-                            post.likeStatus != null && post.likeStatus != 0,
+                            post.likeStatus > 1 ? post.likeStatus - 1 : 0],
+                        isChecked: post.likeStatus != 0,
                       ),
                     ),
                   ),
                   InkWell(
-                    // onTap: () => Get.to(
-                    //   () => PostScreen(
-                    //     id: id,
-                    //     privacy: privacy,
-                    //     avatar: avatar,
-                    //     name: name,
-                    //     content: content,
-                    //     pid: pid,
-                    //   ),
-                    // ),
                     onTap: onDetail,
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: Row(
                         children: [
-                          // Icon(
-                          //   Icons.mode_comment_outlined,
-                          //   size: 20,
-                          //   color: Colors.grey[600],
-                          // ),
                           Image.asset(
                             'assets/icons/comment.png',
                             height: 20,

@@ -27,20 +27,20 @@ class HomeScreen extends GetView<HomeController> {
                 : "icon_home.svg",
           ),
           _buildNavigationBarItem(
-            "Khám phá",
-            MainTabs.discover == controller.currentTab.value
-                ? "icon_discover_activited.svg"
-                : "icon_discover.svg",
+            "Tin nhắn",
+            MainTabs.inbox == controller.currentTab.value
+                ? "icon_inbox_activited.svg"
+                : "icon_inbox.svg",
           ),
           _buildNavigationBarItem(
             "Tạo",
             "icon_resource.svg",
           ),
           _buildNavigationBarItem(
-            "Tin nhắn",
-            MainTabs.inbox == controller.currentTab.value
-                ? "icon_inbox_activited.svg"
-                : "icon_inbox.svg",
+            "Thông báo",
+            MainTabs.discover == controller.currentTab.value
+                ? "icon_discover_activited.svg"
+                : "icon_discover.svg",
           ),
           _buildNavigationBarItem(
             "Tôi",
@@ -67,7 +67,7 @@ class HomeScreen extends GetView<HomeController> {
       case MainTabs.home:
         return controller.mainTab;
       case MainTabs.discover:
-        return controller.discoverTab;
+        return controller.notificationTab;
       case MainTabs.resource:
         return controller.resourceTab;
       case MainTabs.inbox:

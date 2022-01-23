@@ -9,3 +9,4 @@ export 'response/register_response.dart';
 export 'response/posts_response.dart';
 export 'response/comments_response.dart';
 export 'response/friend_response.dart';
+export 'response/notifications_response.dart';
