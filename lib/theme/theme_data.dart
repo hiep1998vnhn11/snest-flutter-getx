@@ -225,21 +225,22 @@ class ThemeConfig {
   static ThemeData appTheme() {
     return ThemeData(
       primaryColor: primaryColor,
-      primarySwatch: const MaterialColor(
-        0xFFFFFFFF,
-        {
-          50: Color(0xFFFFFFEE),
-          100: Color(0xFFFFEEFF),
-          200: Color(0xFFFEEEFF),
-          300: Color(0xFFEEEEEE),
-          400: Color(0xFFFFFFFF),
-          500: Color(0xFFFFFFFF),
-          600: Color(0xFFFEEEFF),
-          700: Color(0xFFFEEEFF),
-          800: Color(0xFFFEEEFF),
-          900: Color(0xFFFFFFFF),
-        },
-      ),
+      primarySwatch: Colors.blue,
+      // const MaterialColor(
+      //   0xFFFFFFFF,
+      //   {
+      //     50: Color(0xFFFFFFEE),
+      //     100: Color(0xFFFFEEFF),
+      //     200: Color(0xFFFEEEFF),
+      //     300: Color(0xFFEEEEEE),
+      //     400: Color(0xFFFFFFFF),
+      //     500: Color(0xFFFFFFFF),
+      //     600: Color(0xFFFEEEFF),
+      //     700: Color(0xFFFEEEFF),
+      //     800: Color(0xFFFEEEFF),
+      //     900: Color(0xFFFFFFFF),
+      //   },
+      // ),
       scaffoldBackgroundColor: scaffoldBackgroundColor,
       backgroundColor: backgroundColor,
       fontFamily: fontFamily,

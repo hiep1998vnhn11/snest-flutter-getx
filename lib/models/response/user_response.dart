@@ -200,8 +200,8 @@ class User {
   int friendsCount;
   int followersCount;
   int followingCount;
-  List? friend;
-  List? follow;
+  int? friend;
+  int? follow;
   UserInfo userInfo;
 
   factory User.fromRawJson(String str) => User.fromJson(json.decode(str));

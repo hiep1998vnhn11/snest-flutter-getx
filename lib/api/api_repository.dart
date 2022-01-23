@@ -47,6 +47,28 @@ class ApiRepository {
     return [];
   }
 
+  Future<List<Post>> getUserPosts({
+    required PaginationRequest request,
+    required String url,
+  }) async {
+    final res = await apiProvider.pagination('user/$url/get_post', request);
+    if (res.body['status'] == 0) {
+      return ListPostResponse.fromJson(res.body['data']).posts;
+    }
+    return [];
+  }
+
+  Future<ListFriendResponse?> getFriends({
+    required String url,
+    required PaginationRequest request,
+  }) async {
+    final res = await apiProvider.pagination('user/$url/get_friend', request);
+    if (res.body['status'] == 0) {
+      return ListFriendResponse.fromJson(res.body['data']);
+    }
+    return null;
+  }
+
   Future<Post?> getPost(String pid) async {
     final res = await apiProvider.get('user/post/$pid');
     if (res.body['status'] == 0) {

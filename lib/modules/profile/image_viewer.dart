@@ -2,8 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:snest/components/dialog/select_dialog.dart';
-import 'package:snest/api/api_provider.dart';
 import 'package:gallery_saver/gallery_saver.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ImageViewer extends StatefulWidget {
   final String imageUrl;
@@ -29,18 +29,53 @@ class _ImageViewerState extends State<ImageViewer> {
     'Xóa ảnh',
   ];
 
+  void _saveNetworkVideo() async {
+    String path =
+        'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4';
+    GallerySaver.saveVideo(path);
+  }
+
   Future _downloadImage() async {
     try {
-      final result = await ApiProvider.downloadImage(widget.imageUrl);
+      final result = await GallerySaver.saveImage(widget.imageUrl);
+      if (result == true)
+        return Fluttertoast.showToast(
+          msg: "Đã lưu ảnh!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.TOP,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      return Fluttertoast.showToast(
+        msg: "Lỗi khi lưu ảnh!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Lỗi khi lưu ảnh!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
       print(e);
     }
   }
 
-  void onOptionSelect(int index) {
+  onOptionSelect(int index) {
     if (index == 0) {
-      _downloadImage();
+      return _downloadImage();
     }
+    if (index == 1) return _saveNetworkVideo();
   }
 
   @override
