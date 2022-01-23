@@ -20,109 +20,141 @@ class _DiscoverTabState extends State<DiscoverTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      elevation: 2,
-      child: ClipRRect(
-        borderRadius: BorderRadius.all(
-          Radius.circular(5),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Discover'),
+        toolbarHeight: 40,
+        centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(50),
+          child: Container(
+            color: Colors.red,
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    height: 50,
+                    child: Text('123'),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    height: 50,
+                    child: Text('123'),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-        child: Column(
-          children: [
-            AspectRatio(
-              aspectRatio: 2,
-              child: Image.asset(
-                'assets/images/card_master.png',
-                height: 200,
-                width: double.infinity,
-                fit: BoxFit.cover,
+      ),
+      body: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        elevation: 2,
+        child: ClipRRect(
+          borderRadius: BorderRadius.all(
+            Radius.circular(5),
+          ),
+          child: Column(
+            children: [
+              AspectRatio(
+                aspectRatio: 2,
+                child: Image.asset(
+                  'assets/images/card_master.png',
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-              height: 1,
-              color: Colors.grey[300],
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * .2,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: ReactionButtonToggle<String>(
-                        onReactionChanged: (String? value, bool isChecked) {
-                          print(
-                            'Selected value: $value, isChecked: $isChecked',
-                          );
-                        },
-                        reactions: example.reactions,
-                        initialReaction: example.defaultInitialReaction,
-                        selectedReaction: example.reactions[1],
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                height: 1,
+                color: Colors.grey[300],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * .2,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: ReactionButtonToggle<String>(
+                          onReactionChanged: (String? value, bool isChecked) {
+                            print(
+                              'Selected value: $value, isChecked: $isChecked',
+                            );
+                          },
+                          reactions: example.reactions,
+                          initialReaction: example.defaultInitialReaction,
+                          selectedReaction: example.reactions[1],
+                        ),
                       ),
                     ),
-                  ),
-                  InkWell(
-                    onTap: () => _showBottomSheetComments(),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.message,
-                          size: 20,
-                          color: Colors.grey[400],
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          'Comment',
-                          style: TextStyle(
-                            fontSize: 17,
-                            color: Colors.grey[600],
+                    InkWell(
+                      onTap: () => _showBottomSheetComments(),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.message,
+                            size: 20,
+                            color: Colors.grey[400],
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 5),
+                          Text(
+                            'Comment',
+                            style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          duration: Duration(seconds: 2),
-                          content: Text(
-                            'Share image',
-                            style: TextStyle(color: Colors.white),
+                    InkWell(
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: Duration(seconds: 2),
+                            content: Text(
+                              'Share image',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: Row(
-                      children: <Widget>[
-                        Icon(
-                          Icons.share,
-                          size: 20,
-                          color: Colors.grey[400],
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          'Share',
-                          style: TextStyle(
-                            fontSize: 17,
-                            color: Colors.grey[600],
+                        );
+                      },
+                      child: Row(
+                        children: <Widget>[
+                          Icon(
+                            Icons.share,
+                            size: 20,
+                            color: Colors.grey[400],
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
+                          const SizedBox(width: 5),
+                          Text(
+                            'Share',
+                            style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-              height: 1,
-              color: Colors.grey[200],
-            ),
-          ],
+              Container(
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                height: 1,
+                color: Colors.grey[200],
+              ),
+            ],
+          ),
         ),
       ),
     );
